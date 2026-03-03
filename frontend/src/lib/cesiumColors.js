@@ -13,6 +13,7 @@ export const EVENT_COLORS = {
   casualty_report: '#e879f9',   // Pink — casualty data
   verified:        '#22c55e',   // Green — cross-verified
   conflict:        '#a855f7',   // Purple — conflicting reports
+  aircraft:        '#38bdf8',   // Sky blue — ADS-B military aircraft
   unknown:         '#94a3b8',   // Slate — unknown
 }
 

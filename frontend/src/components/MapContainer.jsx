@@ -75,11 +75,15 @@ export default function MapContainer({ events, onEntitySelect }) {
   }, [])
 
   // ── Entity upsert when events change ─────────────────────────────
+  // Re-render ALL events on each change so:
+  //   • The initial REST hydration paints every entity at once.
+  //   • Subsequent WebSocket arrivals (prepended to front) are also caught.
   useEffect(() => {
     if (!viewerReady || !viewerRef.current || !events.length) return
     const viewer = viewerRef.current
-    const latestEvent = events[events.length - 1]
-    upsertEntity(viewer, entityMapRef.current, latestEvent)
+    for (const event of events) {
+      upsertEntity(viewer, entityMapRef.current, event)
+    }
   }, [events, viewerReady])
 
   return (
@@ -93,7 +97,8 @@ export default function MapContainer({ events, onEntitySelect }) {
 
 // ── Upsert logic — update if entity exists, create if new ────────────
 function upsertEntity(viewer, entityMap, event) {
-  if (!event.lon || !event.lat) return
+  // Use explicit null/undefined check — 0 is a valid coordinate
+  if (event.lon == null || event.lat == null) return
   const id = `event-${event.id}`
   const color = Color.fromCssColorString(EVENT_COLORS[event.category] ?? '#ff4444')
   const existing = entityMap.get(id)
@@ -113,31 +118,31 @@ function upsertEntity(viewer, entityMap, event) {
     name: event.category,
     position: Cartesian3.fromDegrees(event.lon, event.lat, 0),
 
-    // ─ Point icon (visible at all zoom levels)
+    // ─ Point icon — visible at ALL zoom levels, grows when zoomed in
     point: {
-      pixelSize:    10,
-      color:        color,
-      outlineColor: color.withAlpha(0.4),
-      outlineWidth: 6,
+      pixelSize:       10,
+      color:           color,
+      outlineColor:    color.withAlpha(0.4),
+      outlineWidth:    6,
       heightReference: HeightReference.CLAMP_TO_GROUND,
+      // Scale UP as you zoom in (near=1km→2x, far=10000km→0.5x)
       scaleByDistance: new NearFarScalar(1e3, 2.0, 1e7, 0.5),
-      // At close zoom (<100km altitude), hide the point — InfoCard takes over
-      distanceDisplayCondition: new DistanceDisplayCondition(100_000, Number.MAX_VALUE),
+      // No distanceDisplayCondition — always visible
     },
 
-    // ─ Detail label visible only at high zoom
+    // ─ Label: fade IN as you zoom closer, fully visible under 300km altitude
     label: {
-      text: `[${event.category?.toUpperCase()}] ${event.location_name ?? ''}`,
-      font: '11px "Courier New", monospace',
-      style: LabelStyle.FILL_AND_OUTLINE,
-      fillColor: color,
-      outlineColor: Color.BLACK,
-      outlineWidth: 2,
-      verticalOrigin: VerticalOrigin.BOTTOM,
-      pixelOffset: new Cartesian2(0, -16),
-      // Only show label when zoomed in closer than 500km altitude
-      distanceDisplayCondition: new DistanceDisplayCondition(0, 500_000),
-      translucencyByDistance: new NearFarScalar(100_000, 1.0, 500_000, 0.0),
+      text:            `[${event.category?.toUpperCase()}] ${event.location_name ?? ''}`,
+      font:            '11px "Courier New", monospace',
+      style:           LabelStyle.FILL_AND_OUTLINE,
+      fillColor:       color,
+      outlineColor:    Color.BLACK,
+      outlineWidth:    2,
+      verticalOrigin:  VerticalOrigin.BOTTOM,
+      pixelOffset:     new Cartesian2(0, -16),
+      // Visible from ground up to 2000km; fades out beyond 1500km
+      distanceDisplayCondition: new DistanceDisplayCondition(0, 2_000_000),
+      translucencyByDistance:   new NearFarScalar(1_500_000, 1.0, 2_000_000, 0.0),
     },
 
     // Attach full event data for click handler retrieval

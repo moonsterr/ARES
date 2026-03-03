@@ -12,12 +12,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source
-COPY . .
+# Copy backend source as a proper package at /app/backend/
+COPY . ./backend/
 
 # Create data directories
-RUN mkdir -p data/models
+RUN mkdir -p backend/data/models
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run as a package so relative imports (from .database import ...) resolve correctly
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -241,33 +241,48 @@ async def upsert_vessel(data: dict):
 
 
 async def get_recent_events(limit: int = 100, category: str | None = None) -> list[dict]:
-    """Fetch recent events for the REST fallback endpoint."""
+    """Fetch recent events for the REST fallback endpoint.
+
+    Explicitly serializes:
+      • ST_X/ST_Y  → plain float lat/lon (never raw hex WKB)
+      • entities   → dict (asyncpg returns JSONB as a dict already)
+      • created_at → ISO-8601 string (datetime is not JSON-serializable by default)
+      • sources    → list (asyncpg TEXT[] is already a Python list)
+    """
     pool = await get_pool()
+    query_base = """
+        SELECT id, category,
+               ST_Y(location::geometry) AS lat,
+               ST_X(location::geometry) AS lon,
+               location_name, confidence, bel, pl, conflict_k,
+               sources, translation, raw_text, entities,
+               verified, verified_by, fusion_status,
+               satellite_quicklook,
+               created_at AT TIME ZONE 'UTC' AS created_at
+        FROM events
+    """
     if category:
         rows = await pool.fetch(
-            """SELECT id, category,
-                      ST_Y(location::geometry) AS lat,
-                      ST_X(location::geometry) AS lon,
-                      location_name, confidence, bel, pl, conflict_k,
-                      sources, translation, raw_text, entities,
-                      verified, verified_by, fusion_status,
-                      satellite_quicklook, created_at
-               FROM events
-               WHERE category = $1
-               ORDER BY created_at DESC LIMIT $2""",
-            category, limit
+            query_base + " WHERE category = $1 ORDER BY created_at DESC LIMIT $2",
+            category, limit,
         )
     else:
         rows = await pool.fetch(
-            """SELECT id, category,
-                      ST_Y(location::geometry) AS lat,
-                      ST_X(location::geometry) AS lon,
-                      location_name, confidence, bel, pl, conflict_k,
-                      sources, translation, raw_text, entities,
-                      verified, verified_by, fusion_status,
-                      satellite_quicklook, created_at
-               FROM events
-               ORDER BY created_at DESC LIMIT $1""",
-            limit
+            query_base + " ORDER BY created_at DESC LIMIT $1",
+            limit,
         )
-    return [dict(r) for r in rows]
+
+    result = []
+    for r in rows:
+        record = dict(r)
+        # Coerce datetime → ISO string so JSON serialization never fails
+        if record.get("created_at") is not None:
+            record["created_at"] = record["created_at"].isoformat() + "Z"
+        # Coerce float columns — ST_X/ST_Y on a NULL geometry returns None, keep it
+        record["lat"] = float(record["lat"]) if record["lat"] is not None else None
+        record["lon"] = float(record["lon"]) if record["lon"] is not None else None
+        # entities comes back as a dict from asyncpg's JSONB codec; ensure it's a dict
+        if record.get("entities") is None:
+            record["entities"] = {}
+        result.append(record)
+    return result

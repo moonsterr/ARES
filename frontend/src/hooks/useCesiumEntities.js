@@ -17,7 +17,7 @@ export function useCesiumEntities(viewerRef) {
   const upsertEntity = useCallback((event) => {
     const viewer = viewerRef.current
     if (!viewer || viewer.isDestroyed()) return
-    if (!event.lon || !event.lat) return
+    if (event.lon == null || event.lat == null) return
 
     const id = `event-${event.id}`
     const color = Color.fromCssColorString(EVENT_COLORS[event.category] ?? '#ff4444')
@@ -39,26 +39,26 @@ export function useCesiumEntities(viewerRef) {
       position: Cartesian3.fromDegrees(event.lon, event.lat, 0),
 
       point: {
-        pixelSize:    10,
-        color:        color,
-        outlineColor: color.withAlpha(0.4),
-        outlineWidth: 6,
+        pixelSize:       10,
+        color:           color,
+        outlineColor:    color.withAlpha(0.4),
+        outlineWidth:    6,
         heightReference: HeightReference.CLAMP_TO_GROUND,
         scaleByDistance: new NearFarScalar(1e3, 2.0, 1e7, 0.5),
-        distanceDisplayCondition: new DistanceDisplayCondition(100_000, Number.MAX_VALUE),
+        // No distanceDisplayCondition — always visible
       },
 
       label: {
-        text: `[${event.category?.toUpperCase()}] ${event.location_name ?? ''}`,
-        font: '11px "Courier New", monospace',
-        style: LabelStyle.FILL_AND_OUTLINE,
-        fillColor: color,
-        outlineColor: Color.BLACK,
-        outlineWidth: 2,
+        text:           `[${event.category?.toUpperCase()}] ${event.location_name ?? ''}`,
+        font:           '11px "Courier New", monospace',
+        style:          LabelStyle.FILL_AND_OUTLINE,
+        fillColor:      color,
+        outlineColor:   Color.BLACK,
+        outlineWidth:   2,
         verticalOrigin: VerticalOrigin.BOTTOM,
-        pixelOffset: new Cartesian2(0, -16),
-        distanceDisplayCondition: new DistanceDisplayCondition(0, 500_000),
-        translucencyByDistance: new NearFarScalar(100_000, 1.0, 500_000, 0.0),
+        pixelOffset:    new Cartesian2(0, -16),
+        distanceDisplayCondition: new DistanceDisplayCondition(0, 2_000_000),
+        translucencyByDistance:   new NearFarScalar(1_500_000, 1.0, 2_000_000, 0.0),
       },
 
       properties: { eventData: event },
