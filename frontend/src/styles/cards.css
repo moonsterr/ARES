@@ -1,0 +1,264 @@
+/* cards.css — Event card glassmorphism styles */
+
+.event-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.event-card--air_alert::before     { background: var(--color-air-alert);     box-shadow: var(--glow-red); }
+.event-card--ground_strike::before { background: var(--color-ground-strike);  box-shadow: 0 0 8px rgba(249,115,22,0.6); }
+.event-card--troop_movement::before { background: var(--color-troop-movement); box-shadow: var(--glow-blue); }
+.event-card--naval_event::before   { background: var(--color-naval-event);    box-shadow: 0 0 8px rgba(6,182,212,0.6); }
+.event-card--explosion::before     { background: var(--color-explosion);      box-shadow: var(--glow-amber); }
+.event-card--casualty_report::before { background: #e879f9;                   box-shadow: 0 0 8px rgba(232,121,249,0.6); }
+.event-card--unknown::before       { background: var(--color-text-muted); }
+
+.event-card:hover {
+  background: rgba(13, 17, 23, 0.9);
+  border-color: rgba(255, 255, 255, 0.14);
+  transform: translateX(2px);
+}
+
+.event-card--selected {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2), var(--glow-blue);
+}
+
+/* Header */
+.event-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.event-card__category-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.badge--air_alert      { background: rgba(239, 68, 68, 0.2);  color: #ef4444;  border: 1px solid rgba(239,68,68,0.3); }
+.badge--ground_strike  { background: rgba(249,115, 22, 0.2);  color: #f97316;  border: 1px solid rgba(249,115,22,0.3); }
+.badge--troop_movement { background: rgba(59, 130, 246, 0.2); color: #3b82f6;  border: 1px solid rgba(59,130,246,0.3); }
+.badge--naval_event    { background: rgba(6, 182, 212, 0.2);  color: #06b6d4;  border: 1px solid rgba(6,182,212,0.3); }
+.badge--explosion      { background: rgba(234,179,  8, 0.2);  color: #eab308;  border: 1px solid rgba(234,179,8,0.3); }
+.badge--casualty_report { background: rgba(232,121,249, 0.2); color: #e879f9;  border: 1px solid rgba(232,121,249,0.3); }
+.badge--unknown        { background: rgba(100,116,139, 0.2);  color: #94a3b8;  border: 1px solid rgba(100,116,139,0.3); }
+
+.event-card__verified-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.event-card__time {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* Location */
+.event-card__location {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.event-card__location-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 0.02em;
+}
+
+.event-card__coords {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* Translation text */
+.event-card__translation {
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.7);
+  line-height: 1.6;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Footer */
+.event-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-card__source {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* Confidence meter */
+.confidence-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.confidence-meter__track {
+  position: relative;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.confidence-meter__ignorance {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px 0 0 2px;
+}
+
+.confidence-meter__belief {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--transition-fast), background-color var(--transition-fast);
+}
+
+.confidence-meter__labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.conflict-warn {
+  color: #a855f7;
+}
+
+/* Satellite panel */
+.satellite-panel {
+  border: var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.satellite-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(6, 182, 212, 0.06);
+}
+
+.satellite-panel__title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #06b6d4;
+}
+
+.satellite-panel__event-id {
+  font-size: 9px;
+  color: var(--color-text-muted);
+}
+
+.satellite-panel__close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 4px;
+  transition: color var(--transition-fast);
+}
+
+.satellite-panel__close:hover {
+  color: var(--color-text-primary);
+}
+
+.satellite-panel__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 10px;
+}
+
+.satellite-panel__verified-badge {
+  font-size: 8px;
+  padding: 2px 6px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 3px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.satellite-panel__image-container {
+  padding: 8px;
+  background: #000;
+}
+
+.satellite-panel__image {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-sm);
+}
+
+.satellite-panel__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--color-border);
+  font-size: 9px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+}

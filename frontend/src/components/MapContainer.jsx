@@ -1,0 +1,148 @@
+import { useEffect, useRef, useState } from 'react'
+import {
+  Viewer, Ion, Terrain, Cartesian3, Cartesian2,
+  Color, HeightReference, VerticalOrigin, LabelStyle,
+  DistanceDisplayCondition, ConstantPositionProperty,
+  ConstantProperty, Entity, NearFarScalar,
+  ScreenSpaceEventType
+} from 'cesium'
+import 'cesium/Build/Cesium/Widgets/widgets.css'
+import '../styles/globe.css'
+import { EVENT_COLORS } from '../lib/cesiumColors'
+
+Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION_TOKEN || 'your_cesium_ion_token_here'
+
+// Renders the CesiumJS 3D globe.
+// Props:
+//   events     — array of ConflictEvent objects from WebSocket
+//   onEntitySelect — callback when user clicks an entity
+export default function MapContainer({ events, onEntitySelect }) {
+  const containerRef = useRef(null)
+  const viewerRef    = useRef(null)
+  const entityMapRef = useRef(new Map())   // id → Cesium Entity reference
+  const [viewerReady, setViewerReady] = useState(false)
+
+  // ── Viewer initialization ─────────────────────────────────────────
+  useEffect(() => {
+    if (!containerRef.current || viewerRef.current) return
+
+    const viewer = new Viewer(containerRef.current, {
+      terrain:               Terrain.fromWorldTerrain(),
+      animation:             false,
+      timeline:              false,
+      baseLayerPicker:       false,
+      navigationHelpButton:  false,
+      homeButton:            false,
+      geocoder:              false,
+      sceneModePicker:       false,
+      fullscreenButton:      false,
+      infoBox:               false,   // disabled — we use custom glassmorphism cards
+      selectionIndicator:    false,
+    })
+
+    // Dark atmosphere / space style
+    viewer.scene.globe.enableLighting = true
+    viewer.scene.skyBox.show = true
+    viewer.scene.backgroundColor = Color.BLACK
+    viewer.scene.globe.baseColor = Color.fromCssColorString('#0a0a0f')
+
+    // Remove Bing logo / credits bar
+    viewer.cesiumWidget.creditContainer.style.display = 'none'
+
+    // Click handler → custom info card
+    viewer.screenSpaceEventHandler.setInputAction((click) => {
+      const picked = viewer.scene.pick(click.position)
+      if (picked && picked.id instanceof Entity) {
+        const eventData = picked.id.properties?.eventData?.getValue()
+        if (eventData) onEntitySelect(eventData)
+      }
+    }, ScreenSpaceEventType.LEFT_CLICK)
+
+    viewerRef.current = viewer
+    setViewerReady(true)
+
+    // Focus Middle East on init
+    viewer.camera.setView({
+      destination: Cartesian3.fromDegrees(36.0, 29.0, 3_500_000)
+    })
+
+    return () => {
+      entityMapRef.current.clear()
+      if (!viewer.isDestroyed()) viewer.destroy()
+      viewerRef.current = null
+      setViewerReady(false)
+    }
+  }, [])
+
+  // ── Entity upsert when events change ─────────────────────────────
+  useEffect(() => {
+    if (!viewerReady || !viewerRef.current || !events.length) return
+    const viewer = viewerRef.current
+    const latestEvent = events[events.length - 1]
+    upsertEntity(viewer, entityMapRef.current, latestEvent)
+  }, [events, viewerReady])
+
+  return (
+    <div
+      ref={containerRef}
+      className="cesium-globe"
+      aria-label="ARES 3D Conflict Map"
+    />
+  )
+}
+
+// ── Upsert logic — update if entity exists, create if new ────────────
+function upsertEntity(viewer, entityMap, event) {
+  if (!event.lon || !event.lat) return
+  const id = `event-${event.id}`
+  const color = Color.fromCssColorString(EVENT_COLORS[event.category] ?? '#ff4444')
+  const existing = entityMap.get(id)
+
+  if (existing) {
+    existing.position = new ConstantPositionProperty(
+      Cartesian3.fromDegrees(event.lon, event.lat, 0)
+    )
+    if (existing.point) {
+      existing.point.color = new ConstantProperty(color)
+    }
+    return
+  }
+
+  const entity = viewer.entities.add({
+    id,
+    name: event.category,
+    position: Cartesian3.fromDegrees(event.lon, event.lat, 0),
+
+    // ─ Point icon (visible at all zoom levels)
+    point: {
+      pixelSize:    10,
+      color:        color,
+      outlineColor: color.withAlpha(0.4),
+      outlineWidth: 6,
+      heightReference: HeightReference.CLAMP_TO_GROUND,
+      scaleByDistance: new NearFarScalar(1e3, 2.0, 1e7, 0.5),
+      // At close zoom (<100km altitude), hide the point — InfoCard takes over
+      distanceDisplayCondition: new DistanceDisplayCondition(100_000, Number.MAX_VALUE),
+    },
+
+    // ─ Detail label visible only at high zoom
+    label: {
+      text: `[${event.category?.toUpperCase()}] ${event.location_name ?? ''}`,
+      font: '11px "Courier New", monospace',
+      style: LabelStyle.FILL_AND_OUTLINE,
+      fillColor: color,
+      outlineColor: Color.BLACK,
+      outlineWidth: 2,
+      verticalOrigin: VerticalOrigin.BOTTOM,
+      pixelOffset: new Cartesian2(0, -16),
+      // Only show label when zoomed in closer than 500km altitude
+      distanceDisplayCondition: new DistanceDisplayCondition(0, 500_000),
+      translucencyByDistance: new NearFarScalar(100_000, 1.0, 500_000, 0.0),
+    },
+
+    // Attach full event data for click handler retrieval
+    properties: { eventData: event },
+  })
+
+  entityMap.set(id, entity)
+}

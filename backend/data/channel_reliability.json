@@ -1,0 +1,25 @@
+{
+  "_comment": "Per-channel source reliability weights (α) for Dempster-Shafer confidence engine. α=1.0 = fully trusted, α=0.0 = ignored. These are initial heuristic estimates — calibrate empirically by comparing channel reports against NASA FIRMS verified hotspots.",
+  "channels": {
+    "idf_updates_english":    {"alpha": 0.88, "language": "en", "alignment": "IDF_Official",   "notes": "Official IDF English channel"},
+    "israeldefenseforces":    {"alpha": 0.90, "language": "en", "alignment": "IDF_Official",   "notes": "IDF official, highest confidence"},
+    "kann_news_eng":          {"alpha": 0.82, "language": "en", "alignment": "Israeli_Media",  "notes": "Kann public broadcaster"},
+    "osint_collective":       {"alpha": 0.85, "language": "en", "alignment": "OSINT",           "notes": "OSINT aggregator, good track record"},
+    "wartranslated":          {"alpha": 0.80, "language": "en", "alignment": "OSINT",           "notes": "Translation OSINT, reliable"},
+    "intelsky":               {"alpha": 0.78, "language": "en", "alignment": "OSINT",           "notes": "IntelSky OSINT"},
+    "militarymaps1":          {"alpha": 0.72, "language": "en", "alignment": "OSINT",           "notes": "Military Maps aggregator"},
+    "middle_east_spectator":  {"alpha": 0.70, "language": "en", "alignment": "Regional",        "notes": "ME regional commentary"},
+    "lebanese_breaking_news": {"alpha": 0.68, "language": "ar-en", "alignment": "Lebanese",    "notes": "Local Lebanese news"},
+    "aljumhuriya_lb":         {"alpha": 0.65, "language": "ar", "alignment": "Lebanese",        "notes": "Lebanese media"},
+    "rybar_english":          {"alpha": 0.65, "language": "en", "alignment": "ProKremlin",      "notes": "Russian OSINT — good raw data but pro-Kremlin framing"},
+    "iran_briefing":          {"alpha": 0.60, "language": "en", "alignment": "Iran_Monitor",   "notes": "Iran media monitor"},
+    "sabereen_news":          {"alpha": 0.55, "language": "ar", "alignment": "IranAligned",     "notes": "Iraqi PMF / Iran-aligned, known embellishment"},
+    "palinfo":                {"alpha": 0.50, "language": "ar", "alignment": "Hamas",           "notes": "Hamas-affiliated, cross-verify"},
+    "ansarallaheng":          {"alpha": 0.48, "language": "en", "alignment": "Houthi",          "notes": "Official Houthi English — self-serving claims"},
+    "irna_fa":                {"alpha": 0.45, "language": "fa", "alignment": "Iranian_State",   "notes": "IRNA state media — significant state bias"}
+  },
+  "default_alpha": 0.50,
+  "calibration_method": "Compare channel location reports against NASA FIRMS confirmed hotspots within 5km/2h window. Update α = (verified_hits) / (total_reports_with_coords) for each channel after 30+ data points.",
+  "version": "1.0",
+  "last_updated": "2026-03-02"
+}

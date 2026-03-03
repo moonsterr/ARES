@@ -1,0 +1,87 @@
+/* globe.css — CesiumJS viewer overrides */
+
+/* CesiumJS canvas fills its container */
+.cesium-globe {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cesium-globe canvas {
+  display: block;
+  outline: none;
+}
+
+/* Hide default Cesium UI chrome */
+.cesium-viewer-bottom {
+  display: none !important;
+}
+
+.cesium-viewer-toolbar {
+  display: none !important;
+}
+
+.cesium-viewer .cesium-widget-credits {
+  display: none !important;
+}
+
+/* Override Cesium widget container positioning */
+.cesium-viewer,
+.cesium-widget,
+.cesium-widget > canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Custom overlay for high-zoom info card */
+.globe-info-card-overlay {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Loading screen */
+.globe-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  z-index: 20;
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+  font-size: 12px;
+}
+
+.globe-loading__spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 12px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Scan line animation overlay */
+.globe-scanline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}

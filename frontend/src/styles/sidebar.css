@@ -1,0 +1,103 @@
+/* sidebar.css — Intelligence Feed sidebar */
+
+.event-log {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.event-log__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  background: rgba(8, 11, 16, 0.6);
+}
+
+.event-log__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--color-text-muted);
+}
+
+.event-log__count {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+}
+
+.event-log__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 16px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.event-log__empty-sub {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.event-log__list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+.event-log__list::-webkit-scrollbar {
+  width: 4px;
+}
+.event-log__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.event-log__list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+/* Filter bar */
+.event-log__filters {
+  display: flex;
+  gap: 4px;
+  padding: 8px 8px 0;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  padding: 3px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all var(--transition-fast);
+}
+
+.filter-chip:hover,
+.filter-chip--active {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}

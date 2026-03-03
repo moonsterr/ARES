@@ -1,0 +1,174 @@
+/* global.css — ARES Intelligence Dashboard */
+:root {
+  --color-bg:           #080b10;
+  --color-surface:      #0d1117;
+  --color-border:       rgba(255, 255, 255, 0.08);
+  --color-text-primary: #e2e8f0;
+  --color-text-muted:   #64748b;
+
+  /* Event category colors */
+  --color-air-alert:      #ef4444;   /* Red — hostile air */
+  --color-ground-strike:  #f97316;   /* Orange — kinetic ground */
+  --color-troop-movement: #3b82f6;   /* Blue — friendly/movement */
+  --color-naval-event:    #06b6d4;   /* Cyan — maritime */
+  --color-explosion:      #eab308;   /* Amber — unverified blast */
+  --color-verified:       #22c55e;   /* Green — cross-verified */
+  --color-conflict:       #a855f7;   /* Purple — conflicting reports */
+
+  --glass-bg:      rgba(13, 17, 23, 0.75);
+  --glass-blur:    blur(16px) saturate(180%);
+  --glass-border:  1px solid rgba(255, 255, 255, 0.08);
+  --glow-red:      0 0 20px rgba(239, 68, 68, 0.6);
+  --glow-blue:     0 0 20px rgba(59, 130, 246, 0.6);
+  --glow-amber:    0 0 20px rgba(234, 179, 8, 0.6);
+
+  --font-mono: 'Courier New', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --transition-fast: 150ms ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  overflow: hidden;
+  height: 100vh;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.ares-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.ares-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ares-globe-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glassmorphism sidebar */
+.ares-sidebar {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-left: var(--glass-border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.ares-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.ares-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ares-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+/* Status bar */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(8, 11, 16, 0.95);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  height: 36px;
+}
+
+.status-bar__brand {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: 0.12em;
+}
+
+.status-bar__brand-sub {
+  font-weight: 400;
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+.status-bar__indicators {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-indicator__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-indicator__label {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.status-indicator__sub {
+  color: var(--color-text-muted);
+  font-size: 9px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Utility classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
