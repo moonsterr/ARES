@@ -5,3 +5,4 @@ my_env/
 .vscode/
 node_modules/
 dist/
+.env
