@@ -2,15 +2,13 @@
 Agent CHARLIE-A — ACLED Conflict Event Fetcher
 ===============================================
 Fetches armed conflict events from the Armed Conflict Location & Event Data
-Project (ACLED) API and converts them to ConflictIntel events.
-
-ACLED provides real-time conflict data with lat/lon, actors, fatalities,
-and event types for 170+ countries — high-value for ground truth.
+Project (ACLED) API using OAuth2 Bearer token auth (auto-refreshed every 24h).
 
 Registration: https://acleddata.com/register/ (free, instant)
 
 Key features
 ------------
+• OAuth2 password-grant token — auto-fetched and refreshed before expiry
 • Filters to Middle East + North Africa + Ukraine theatre by ISO codes
 • Maps ACLED event types to ARES EventCategory
 • Uses DST with α=0.80 (ACLED is cross-referenced and reliable)
@@ -43,6 +41,10 @@ _cb = CircuitBreaker("acled", failure_threshold=3, recovery_timeout=300, cache_t
 # ── Deduplication ─────────────────────────────────────────────────────
 _SEEN: dict[str, float] = {}
 _DEDUP_TTL_S = 86_400  # 24 hours
+
+# ── OAuth2 token state ─────────────────────────────────────────────────
+_access_token: Optional[str] = None
+_token_expires_at: float = 0.0  # monotonic time
 
 # ── Middle East + North Africa + Ukraine ISO3 codes ───────────────────
 ACLED_ISO_COUNTRIES = (
@@ -86,31 +88,77 @@ def _prune_seen():
         del _SEEN[k]
 
 
+async def _fetch_token(client: httpx.AsyncClient) -> tuple[Optional[str], int]:
+    """Fetch a fresh OAuth2 Bearer token from ACLED."""
+    if not settings.ACLED_EMAIL or not settings.ACLED_PASSWORD:
+        logger.warning("[CHARLIE-A] ACLED_EMAIL or ACLED_PASSWORD not set — cannot fetch token")
+        return (None, 0)
+    try:
+        resp = await client.post(
+            settings.ACLED_TOKEN_URL,
+            data={
+                "username":   settings.ACLED_EMAIL,
+                "password":   settings.ACLED_PASSWORD,
+                "grant_type": "password",
+                "client_id":  "acled",
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=20.0,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        token = data.get("access_token")
+        expires_in = int(data.get("expires_in", 86400))
+        if token:
+            logger.info(f"[CHARLIE-A] OAuth2 token acquired, expires in {expires_in}s")
+        return token, expires_in
+    except Exception as exc:
+        logger.warning(f"[CHARLIE-A] Token fetch failed: {exc}")
+        return (None, 0)
+
+
+async def _ensure_token(client: httpx.AsyncClient) -> Optional[str]:
+    """Return a valid token, refreshing if within 5 minutes of expiry."""
+    global _access_token, _token_expires_at
+    # Refresh if expired or expiring within 5 minutes
+    if _access_token is None or time.monotonic() >= _token_expires_at - 300:
+        token, expires_in = await _fetch_token(client)
+        if token:
+            _access_token = token
+            _token_expires_at = time.monotonic() + expires_in
+        else:
+            _access_token = None
+    return _access_token
+
+
 async def _fetch_acled(client: httpx.AsyncClient) -> Optional[list[dict]]:
-    """Fetch recent ACLED events via REST API."""
-    if not settings.ACLED_API_KEY:
-        logger.warning("[CHARLIE-A] ACLED_API_KEY not set — agent idle")
+    """Fetch recent ACLED events via REST API using Bearer token."""
+    token = await _ensure_token(client)
+    if not token:
+        logger.warning("[CHARLIE-A] No valid token — skipping cycle")
         return None
 
     params = {
-        "key":          settings.ACLED_API_KEY,
-        "email":        settings.ACLED_EMAIL,
-        "iso":          ACLED_ISO_COUNTRIES,
-        "limit":        settings.ACLED_MAX_RECORDS,
-        "fields":       "event_id_cnty|event_date|event_type|sub_event_type|country|location|latitude|longitude|fatalities|actor1|actor2|notes|source",
-        "format":       "json",
-        "timestamp":    "1",
+        "iso":       ACLED_ISO_COUNTRIES,
+        "limit":     settings.ACLED_MAX_RECORDS,
+        "fields":    "event_id_cnty|event_date|event_type|sub_event_type|country|location|latitude|longitude|fatalities|actor1|actor2|notes|source",
+        "format":    "json",
+        "timestamp": "1",
     }
     url = f"{settings.ACLED_BASE_URL}?{urlencode(params)}"
 
     try:
-        resp = await client.get(url, timeout=30.0)
+        resp = await client.get(
+            url,
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=30.0,
+        )
         resp.raise_for_status()
         data = resp.json()
         if data.get("status") == 200 and "data" in data:
             return data["data"]
         else:
-            logger.warning(f"[CHARLIE-A] Unexpected ACLED response: {data.get('status')}")
+            logger.warning(f"[CHARLIE-A] Unexpected ACLED response: {data.get('status')} — {data.get('message', '')}")
             return []
     except Exception as exc:
         logger.warning(f"[CHARLIE-A] ACLED fetch failed: {exc}")
@@ -150,7 +198,7 @@ async def _process_event(ev: dict) -> Optional[dict]:
         raw_text        = notes or f"{ev.get('event_type')} in {location_name}, {country}",
         translation     = notes or "",
         category        = category,
-        confidence      = 0.85,  # ACLED is cross-referenced
+        confidence      = 0.85,
         source_language = "en",
         is_confirmed    = bool(ev.get("fatalities", 0)),
         casualty_count  = int(ev.get("fatalities", 0)) or None,
@@ -166,7 +214,6 @@ async def _process_event(ev: dict) -> Optional[dict]:
             confidence = 0.95,
         ))
 
-    # DST — ACLED is a curated, cross-referenced source
     alpha = settings.ACLED_RELIABILITY_ALPHA
     bba   = initial_bba(intel, alpha)
     intel.bel          = bba["belief"]
@@ -211,8 +258,8 @@ async def poll_acled():
         while True:
             await asyncio.sleep(3600)
 
-    if not settings.ACLED_API_KEY:
-        logger.warning("[CHARLIE-A] ACLED_API_KEY not configured — agent idle")
+    if not settings.ACLED_EMAIL or not settings.ACLED_PASSWORD:
+        logger.warning("[CHARLIE-A] ACLED_EMAIL / ACLED_PASSWORD not configured — agent idle")
         while True:
             await asyncio.sleep(3600)
 

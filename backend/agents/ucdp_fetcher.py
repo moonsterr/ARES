@@ -72,8 +72,12 @@ async def _fetch_ucdp(client: httpx.AsyncClient) -> Optional[list[dict]]:
     }
     url = f"{settings.UCDP_BASE_URL}?{urlencode(params)}"
 
+    headers: dict[str, str] = {}
+    if settings.UCDP_ACCESS_TOKEN:
+        headers["x-ucdp-access-token"] = settings.UCDP_ACCESS_TOKEN
+
     try:
-        resp = await client.get(url, timeout=30.0)
+        resp = await client.get(url, headers=headers, timeout=30.0)
         resp.raise_for_status()
         data = resp.json()
         return data.get("Result", [])

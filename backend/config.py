@@ -93,16 +93,14 @@ class Settings(BaseSettings):
     )
 
     # ── ACLED ─────────────────────────────────────────────────────────
-    ACLED_API_KEY: str = Field(
-        default="",
-        description="ACLED API key — register free at https://acleddata.com/register/"
-    )
-    ACLED_EMAIL: str = Field(
-        default="",
-        description="Email used when registering for ACLED (required alongside key)"
+    ACLED_EMAIL: str = Field(default="", description="ACLED account email")
+    ACLED_PASSWORD: str = Field(default="", description="ACLED account password (used for OAuth2 token fetch)")
+    ACLED_TOKEN_URL: str = Field(
+        default="https://acleddata.com/oauth/token",
+        description="ACLED OAuth2 token endpoint"
     )
     ACLED_BASE_URL: str = Field(
-        default="https://api.acleddata.com/acled/read",
+        default="https://acleddata.com/api/acled/read",
         description="ACLED v2 read endpoint"
     )
     ACLED_MAX_RECORDS: int = Field(
@@ -119,9 +117,13 @@ class Settings(BaseSettings):
     )
 
     # ── UCDP ──────────────────────────────────────────────────────────
+    UCDP_ACCESS_TOKEN: str = Field(
+        default="",
+        description="UCDP access token — register at https://ucdpapi.pcr.uu.se"
+    )
     UCDP_BASE_URL: str = Field(
         default="https://ucdpapi.pcr.uu.se/api/gedevents/24.1",
-        description="UCDP GED REST API endpoint (no key required)"
+        description="UCDP GED REST API endpoint"
     )
     UCDP_POLL_INTERVAL: int = Field(
         default=7200,

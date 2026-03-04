@@ -2,165 +2,1077 @@
   "version": "2.0",
   "description": "ARES curated RSS feed list — 170+ sources across Middle East, conflict zones, and global wire services",
   "feeds": [
-    {"url": "https://www.aljazeera.com/xml/rss/all.xml",                          "lang": "en", "region": "ME",     "reliability": 0.72, "category": "news"},
-    {"url": "https://www.jpost.com/rss/rssfeedsheadlines.aspx",                   "lang": "en", "region": "IL",     "reliability": 0.70, "category": "news"},
-    {"url": "https://www.middleeasteye.net/rss",                                  "lang": "en", "region": "ME",     "reliability": 0.65, "category": "news"},
-    {"url": "https://feeds.reuters.com/reuters/worldNews",                        "lang": "en", "region": "global", "reliability": 0.85, "category": "wire"},
-    {"url": "https://feeds.bbci.co.uk/news/world/middle_east/rss.xml",            "lang": "en", "region": "ME",     "reliability": 0.82, "category": "news"},
-    {"url": "https://apnews.com/rss/apf-intlnews",                                "lang": "en", "region": "global", "reliability": 0.83, "category": "wire"},
-    {"url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",             "lang": "en", "region": "global", "reliability": 0.80, "category": "news"},
-    {"url": "https://www.theguardian.com/world/rss",                              "lang": "en", "region": "global", "reliability": 0.78, "category": "news"},
-    {"url": "https://www.washingtonpost.com/arcio/rss/category/world/",           "lang": "en", "region": "global", "reliability": 0.78, "category": "news"},
-    {"url": "https://foreignpolicy.com/feed/",                                    "lang": "en", "region": "global", "reliability": 0.80, "category": "analysis"},
-    {"url": "https://www.defensenews.com/rss/",                                   "lang": "en", "region": "global", "reliability": 0.78, "category": "military"},
-    {"url": "https://www.janes.com/feeds/news",                                   "lang": "en", "region": "global", "reliability": 0.82, "category": "military"},
-    {"url": "https://breakingdefense.com/feed/",                                  "lang": "en", "region": "global", "reliability": 0.75, "category": "military"},
-    {"url": "https://www.defensedaily.com/feed",                                  "lang": "en", "region": "global", "reliability": 0.72, "category": "military"},
-    {"url": "https://www.military.com/rss-feeds/content?id=news",                 "lang": "en", "region": "global", "reliability": 0.70, "category": "military"},
-    {"url": "https://www.haaretz.com/cmlink/1.628765",                            "lang": "en", "region": "IL",     "reliability": 0.75, "category": "news"},
-    {"url": "https://www.timesofisrael.com/feed/",                                "lang": "en", "region": "IL",     "reliability": 0.72, "category": "news"},
-    {"url": "https://www.ynetnews.com/category/3082",                             "lang": "en", "region": "IL",     "reliability": 0.70, "category": "news"},
-    {"url": "https://www.i24news.tv/en/rss",                                      "lang": "en", "region": "IL",     "reliability": 0.68, "category": "news"},
-    {"url": "https://www.israelhayom.com/feed/",                                  "lang": "en", "region": "IL",     "reliability": 0.65, "category": "news"},
-    {"url": "https://www.arabnews.com/rss.xml",                                   "lang": "en", "region": "ME",     "reliability": 0.65, "category": "news"},
-    {"url": "https://english.alarabiya.net/tools/rss",                            "lang": "en", "region": "ME",     "reliability": 0.62, "category": "news"},
-    {"url": "https://english.aawsat.com/rss.xml",                                 "lang": "en", "region": "ME",     "reliability": 0.65, "category": "news"},
-    {"url": "https://www.dailysabah.com/rss",                                     "lang": "en", "region": "TR",     "reliability": 0.60, "category": "news"},
-    {"url": "https://www.aa.com.tr/en/rss/default?cat=world",                     "lang": "en", "region": "TR",     "reliability": 0.62, "category": "wire"},
-    {"url": "https://en.irna.ir/rss",                                             "lang": "en", "region": "IR",     "reliability": 0.45, "category": "state"},
-    {"url": "https://en.mehrnews.com/rss",                                        "lang": "en", "region": "IR",     "reliability": 0.45, "category": "state"},
-    {"url": "https://parstoday.ir/en/rss",                                        "lang": "en", "region": "IR",     "reliability": 0.42, "category": "state"},
-    {"url": "https://www.presstv.ir/homefeed.aspx",                               "lang": "en", "region": "IR",     "reliability": 0.40, "category": "state"},
-    {"url": "https://sana.sy/?feed=rss2",                                         "lang": "en", "region": "SY",     "reliability": 0.35, "category": "state"},
-    {"url": "https://reliefweb.int/updates/rss.xml?search=middle+east",           "lang": "en", "region": "ME",     "reliability": 0.75, "category": "humanitarian"},
-    {"url": "https://www.occrp.org/en/rss",                                       "lang": "en", "region": "global", "reliability": 0.78, "category": "investigative"},
-    {"url": "https://bellingcat.com/feed/",                                        "lang": "en", "region": "global", "reliability": 0.80, "category": "osint"},
-    {"url": "https://www.understandingwar.org/rss.xml",                           "lang": "en", "region": "global", "reliability": 0.80, "category": "analysis"},
-    {"url": "https://warontherocks.com/feed/",                                    "lang": "en", "region": "global", "reliability": 0.78, "category": "analysis"},
-    {"url": "https://www.crisisgroup.org/rss",                                    "lang": "en", "region": "global", "reliability": 0.80, "category": "analysis"},
-    {"url": "https://acleddata.com/feed/",                                        "lang": "en", "region": "global", "reliability": 0.80, "category": "analysis"},
-    {"url": "https://theintercept.com/feed/?rss",                                 "lang": "en", "region": "global", "reliability": 0.70, "category": "investigative"},
-    {"url": "https://consortiumnews.com/feed/",                                   "lang": "en", "region": "global", "reliability": 0.60, "category": "news"},
-    {"url": "https://www.almonitor.com/rss",                                      "lang": "en", "region": "ME",     "reliability": 0.75, "category": "analysis"},
-    {"url": "https://carnegieendowment.org/rss/solr?lang=en&q=%22middle+east%22", "lang": "en", "region": "ME",     "reliability": 0.78, "category": "analysis"},
-    {"url": "https://www.mei.edu/rss.xml",                                        "lang": "en", "region": "ME",     "reliability": 0.78, "category": "analysis"},
-    {"url": "https://www.iiss.org/rss",                                           "lang": "en", "region": "global", "reliability": 0.82, "category": "analysis"},
-    {"url": "https://www.chathamhouse.org/rss.xml",                               "lang": "en", "region": "global", "reliability": 0.80, "category": "analysis"},
-    {"url": "https://www.rand.org/paf/news.xml",                                  "lang": "en", "region": "global", "reliability": 0.80, "category": "analysis"},
-    {"url": "https://www.sipri.org/rss.xml",                                      "lang": "en", "region": "global", "reliability": 0.82, "category": "analysis"},
-    {"url": "https://kyivindependent.com/feed/",                                  "lang": "en", "region": "UA",     "reliability": 0.72, "category": "news"},
-    {"url": "https://www.ukrinform.net/rss/block-ato",                            "lang": "en", "region": "UA",     "reliability": 0.65, "category": "news"},
-    {"url": "https://english.nv.ua/rss/",                                         "lang": "en", "region": "UA",     "reliability": 0.68, "category": "news"},
-    {"url": "https://meduza.io/en/rss/all",                                       "lang": "en", "region": "RU",     "reliability": 0.72, "category": "news"},
-    {"url": "https://theins.ru/en/feed",                                          "lang": "en", "region": "RU",     "reliability": 0.70, "category": "investigative"},
-    {"url": "https://www.dawn.com/feeds/home",                                    "lang": "en", "region": "PK",     "reliability": 0.68, "category": "news"},
-    {"url": "https://tribune.com.pk/feed",                                        "lang": "en", "region": "PK",     "reliability": 0.65, "category": "news"},
-    {"url": "https://www.thehindu.com/news/international/feeder/default.rss",     "lang": "en", "region": "IN",     "reliability": 0.72, "category": "news"},
-    {"url": "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",         "lang": "en", "region": "IN",     "reliability": 0.68, "category": "news"},
-    {"url": "https://www.france24.com/en/rss",                                    "lang": "en", "region": "global", "reliability": 0.75, "category": "news"},
-    {"url": "https://www.dw.com/en/rss/top-stories/s-9097",                      "lang": "en", "region": "global", "reliability": 0.76, "category": "news"},
-    {"url": "https://www.euronews.com/rss",                                       "lang": "en", "region": "global", "reliability": 0.72, "category": "news"},
-    {"url": "https://www.aljazeera.com/xml/rss/arabic.xml",                       "lang": "ar", "region": "ME",     "reliability": 0.72, "category": "news"},
-    {"url": "https://www.alarabiya.net/ar/rss.xml",                               "lang": "ar", "region": "ME",     "reliability": 0.62, "category": "news"},
-    {"url": "https://arabic.rt.com/rss/",                                         "lang": "ar", "region": "global", "reliability": 0.40, "category": "state"},
-    {"url": "https://www.bbc.com/arabic/index.xml",                               "lang": "ar", "region": "ME",     "reliability": 0.80, "category": "news"},
-    {"url": "https://www.france24.com/ar/rss",                                    "lang": "ar", "region": "ME",     "reliability": 0.75, "category": "news"},
-    {"url": "https://aawsat.com/rss.xml",                                         "lang": "ar", "region": "ME",     "reliability": 0.65, "category": "news"},
-    {"url": "https://www.alquds.co.uk/?feed=rss2",                                "lang": "ar", "region": "ME",     "reliability": 0.60, "category": "news"},
-    {"url": "https://www.aa.com.tr/ar/rss/default?cat=world",                     "lang": "ar", "region": "ME",     "reliability": 0.62, "category": "wire"},
-    {"url": "https://www.iran.ru/rss/all",                                        "lang": "ru", "region": "IR",     "reliability": 0.45, "category": "news"},
-    {"url": "https://meduza.io/rss/all",                                          "lang": "ru", "region": "RU",     "reliability": 0.72, "category": "news"},
-    {"url": "https://novayagazeta.eu/rss",                                        "lang": "ru", "region": "RU",     "reliability": 0.70, "category": "investigative"},
-    {"url": "https://www.bbc.com/russian/index.xml",                              "lang": "ru", "region": "RU",     "reliability": 0.80, "category": "news"},
-    {"url": "https://www.rferl.org/api/z-ryyyxyijqp",                             "lang": "ru", "region": "RU",     "reliability": 0.75, "category": "news"},
-    {"url": "https://www.haaretz.co.il/cmlink/1.1064988",                         "lang": "he", "region": "IL",     "reliability": 0.75, "category": "news"},
-    {"url": "https://www.ynet.co.il/RSS/Category/3082",                           "lang": "he", "region": "IL",     "reliability": 0.70, "category": "news"},
-    {"url": "https://www.mako.co.il/rss/news-military.xml",                       "lang": "he", "region": "IL",     "reliability": 0.68, "category": "military"},
-    {"url": "https://rss.walla.co.il/feed/22",                                    "lang": "he", "region": "IL",     "reliability": 0.65, "category": "news"},
-    {"url": "https://www.kan.org.il/rss/",                                        "lang": "he", "region": "IL",     "reliability": 0.72, "category": "news"},
-    {"url": "https://en.irna.ir/rss/politics",                                    "lang": "en", "region": "IR",     "reliability": 0.45, "category": "state"},
-    {"url": "https://en.irna.ir/rss/military",                                    "lang": "en", "region": "IR",     "reliability": 0.45, "category": "state"},
-    {"url": "https://www.voanews.com/api/epiqq",                                  "lang": "en", "region": "global", "reliability": 0.72, "category": "news"},
-    {"url": "https://www.rferl.org/api/ztmqxyijqp",                               "lang": "en", "region": "global", "reliability": 0.75, "category": "news"},
-    {"url": "https://www.ndi.org/rss.xml",                                        "lang": "en", "region": "global", "reliability": 0.70, "category": "analysis"},
-    {"url": "https://www.hrw.org/rss.xml",                                        "lang": "en", "region": "global", "reliability": 0.78, "category": "humanitarian"},
-    {"url": "https://www.amnesty.org/en/latest/rss/",                             "lang": "en", "region": "global", "reliability": 0.76, "category": "humanitarian"},
-    {"url": "https://www.un.org/press/en/rss.xml",                                "lang": "en", "region": "global", "reliability": 0.72, "category": "official"},
-    {"url": "https://news.un.org/feed/subscribe/en/news/topic/peace-and-security/feed/rss.xml", "lang": "en", "region": "global", "reliability": 0.72, "category": "official"},
-    {"url": "https://ocha.unocha.org/rss.xml",                                    "lang": "en", "region": "global", "reliability": 0.75, "category": "humanitarian"},
-    {"url": "https://www.nato.int/cps/en/natolive/news.htm?rss=true",             "lang": "en", "region": "global", "reliability": 0.75, "category": "official"},
-    {"url": "https://www.state.gov/rss-feeds/press-releases/",                    "lang": "en", "region": "global", "reliability": 0.72, "category": "official"},
-    {"url": "https://www.mod.uk/news.rss",                                        "lang": "en", "region": "global", "reliability": 0.72, "category": "official"},
-    {"url": "https://www.idf.il/en/rss/",                                         "lang": "en", "region": "IL",     "reliability": 0.70, "category": "official"},
-    {"url": "https://www.iaea.org/feeds/topnews.xml",                             "lang": "en", "region": "global", "reliability": 0.80, "category": "official"},
-    {"url": "https://www.lowyinstitute.org/the-interpreter/rss.xml",              "lang": "en", "region": "global", "reliability": 0.75, "category": "analysis"},
-    {"url": "https://www.brookings.edu/feed/",                                    "lang": "en", "region": "global", "reliability": 0.78, "category": "analysis"},
-    {"url": "https://www.cfr.org/rss/region/middle-east",                         "lang": "en", "region": "ME",     "reliability": 0.80, "category": "analysis"},
-    {"url": "https://thesoufancenter.org/feed/",                                  "lang": "en", "region": "global", "reliability": 0.78, "category": "analysis"},
-    {"url": "https://www.criticalthreats.org/rss",                                "lang": "en", "region": "ME",     "reliability": 0.78, "category": "analysis"},
-    {"url": "https://www.longwarjournal.org/feed",                                "lang": "en", "region": "global", "reliability": 0.75, "category": "military"},
-    {"url": "https://www.counterterrorism.com/feed",                              "lang": "en", "region": "global", "reliability": 0.72, "category": "analysis"},
-    {"url": "https://www.navalnews.com/feed/",                                    "lang": "en", "region": "global", "reliability": 0.75, "category": "military"},
-    {"url": "https://www.thedrive.com/the-war-zone/rss",                          "lang": "en", "region": "global", "reliability": 0.78, "category": "military"},
-    {"url": "https://oryx.substack.com/feed",                                     "lang": "en", "region": "global", "reliability": 0.80, "category": "osint"},
-    {"url": "https://www.osintdefender.com/feed",                                 "lang": "en", "region": "global", "reliability": 0.72, "category": "osint"},
-    {"url": "https://inteldocket.com/feed/",                                      "lang": "en", "region": "global", "reliability": 0.70, "category": "osint"},
-    {"url": "https://www.globalsecurity.org/security/library/news/rss/globalsec-news.xml", "lang": "en", "region": "global", "reliability": 0.68, "category": "analysis"},
-    {"url": "https://mwi.usma.edu/feed/",                                         "lang": "en", "region": "global", "reliability": 0.78, "category": "analysis"},
-    {"url": "https://thebulletin.org/feed/",                                      "lang": "en", "region": "global", "reliability": 0.78, "category": "analysis"},
-    {"url": "https://npolicy.org/feed/",                                          "lang": "en", "region": "global", "reliability": 0.75, "category": "analysis"},
-    {"url": "https://www.armscontrol.org/rss.xml",                                "lang": "en", "region": "global", "reliability": 0.78, "category": "analysis"},
-    {"url": "https://www.middleeastmonitor.com/feed/",                            "lang": "en", "region": "ME",     "reliability": 0.62, "category": "news"},
-    {"url": "https://www.naharnet.com/stories/en/rss",                            "lang": "en", "region": "LB",     "reliability": 0.65, "category": "news"},
-    {"url": "https://www.lorientlejour.com/rss",                                  "lang": "fr", "region": "LB",     "reliability": 0.65, "category": "news"},
-    {"url": "https://english.alaraby.co.uk/rss.xml",                              "lang": "en", "region": "ME",     "reliability": 0.62, "category": "news"},
-    {"url": "https://www.syriahr.com/en/feed/",                                   "lang": "en", "region": "SY",     "reliability": 0.65, "category": "news"},
-    {"url": "https://syriadirect.org/feed/",                                      "lang": "en", "region": "SY",     "reliability": 0.70, "category": "news"},
-    {"url": "https://www.enabbaladi.net/archives/category/news/feed",             "lang": "ar", "region": "SY",     "reliability": 0.65, "category": "news"},
-    {"url": "https://www.rudaw.net/rss/world",                                    "lang": "en", "region": "IQ",     "reliability": 0.65, "category": "news"},
-    {"url": "https://shafaq.com/en/rss/Kurdestan",                                "lang": "en", "region": "IQ",     "reliability": 0.62, "category": "news"},
-    {"url": "https://www.kurdistan24.net/rss/0",                                  "lang": "en", "region": "IQ",     "reliability": 0.62, "category": "news"},
-    {"url": "https://www.yemenfuture.net/feed",                                   "lang": "en", "region": "YE",     "reliability": 0.60, "category": "news"},
-    {"url": "https://www.saudigazette.com.sa/rss",                                "lang": "en", "region": "SA",     "reliability": 0.58, "category": "news"},
-    {"url": "https://www.gulf-times.com/rss",                                     "lang": "en", "region": "ME",     "reliability": 0.62, "category": "news"},
-    {"url": "https://gulfnews.com/rss",                                           "lang": "en", "region": "ME",     "reliability": 0.65, "category": "news"},
-    {"url": "https://www.thenationalnews.com/rss",                                "lang": "en", "region": "ME",     "reliability": 0.68, "category": "news"},
-    {"url": "https://www.khaleejtimes.com/rss",                                   "lang": "en", "region": "ME",     "reliability": 0.62, "category": "news"},
-    {"url": "https://www.hurriyetdailynews.com/rss",                              "lang": "en", "region": "TR",     "reliability": 0.60, "category": "news"},
-    {"url": "https://www.bianet.org/english/rss",                                 "lang": "en", "region": "TR",     "reliability": 0.65, "category": "news"},
-    {"url": "https://jamestown.org/feed/",                                        "lang": "en", "region": "global", "reliability": 0.75, "category": "analysis"},
-    {"url": "https://www.euromaidan.press/feed/",                                 "lang": "en", "region": "UA",     "reliability": 0.68, "category": "news"},
-    {"url": "https://babel.ua/en/rss",                                            "lang": "en", "region": "UA",     "reliability": 0.68, "category": "news"},
-    {"url": "https://english.nv.ua/rss/",                                         "lang": "en", "region": "UA",     "reliability": 0.68, "category": "news"},
-    {"url": "https://www.pravda.com.ua/eng/rss/view_news/",                       "lang": "en", "region": "UA",     "reliability": 0.70, "category": "news"},
-    {"url": "https://intellinews.com/feed/",                                      "lang": "en", "region": "global", "reliability": 0.68, "category": "news"},
-    {"url": "https://www.rusi.org/rss.xml",                                       "lang": "en", "region": "global", "reliability": 0.82, "category": "analysis"},
-    {"url": "https://moderndiplomacy.eu/feed/",                                   "lang": "en", "region": "global", "reliability": 0.60, "category": "analysis"},
-    {"url": "https://www.atlanticcouncil.org/feed/",                              "lang": "en", "region": "global", "reliability": 0.75, "category": "analysis"},
-    {"url": "https://www.middleeasternpolitics.com/feed/",                        "lang": "en", "region": "ME",     "reliability": 0.60, "category": "analysis"},
-    {"url": "https://www.jewishvirtuallibrary.org/rss",                           "lang": "en", "region": "IL",     "reliability": 0.65, "category": "analysis"},
-    {"url": "https://www.alzaytouna.net/en/?feed=rss2",                           "lang": "en", "region": "ME",     "reliability": 0.60, "category": "analysis"},
-    {"url": "https://www.ndu.edu.lb/rss",                                         "lang": "en", "region": "LB",     "reliability": 0.65, "category": "analysis"},
-    {"url": "https://www.spacewar.com/spacenews.xml",                             "lang": "en", "region": "global", "reliability": 0.65, "category": "military"},
-    {"url": "https://spacenews.com/feed/",                                        "lang": "en", "region": "global", "reliability": 0.72, "category": "military"},
-    {"url": "https://www.airandspaceforces.com/feed/",                            "lang": "en", "region": "global", "reliability": 0.72, "category": "military"},
-    {"url": "https://nationalinterest.org/rss.xml",                               "lang": "en", "region": "global", "reliability": 0.68, "category": "analysis"},
-    {"url": "https://www.politico.eu/feed/",                                      "lang": "en", "region": "global", "reliability": 0.72, "category": "news"},
-    {"url": "https://www.economist.com/middle-east-and-africa/rss.xml",           "lang": "en", "region": "ME",     "reliability": 0.80, "category": "analysis"},
-    {"url": "https://spectator.org/feed/",                                        "lang": "en", "region": "global", "reliability": 0.60, "category": "news"},
-    {"url": "https://unhcr.org/rss/news.xml",                                     "lang": "en", "region": "global", "reliability": 0.78, "category": "humanitarian"},
-    {"url": "https://www.icrc.org/en/rss",                                        "lang": "en", "region": "global", "reliability": 0.80, "category": "humanitarian"},
-    {"url": "https://www.msf.org/en/rss",                                         "lang": "en", "region": "global", "reliability": 0.78, "category": "humanitarian"},
-    {"url": "https://www.fao.org/newsroom/rss/en/",                               "lang": "en", "region": "global", "reliability": 0.75, "category": "humanitarian"},
-    {"url": "https://www.naval-technology.com/news/feed/",                        "lang": "en", "region": "global", "reliability": 0.72, "category": "military"},
-    {"url": "https://aviationweek.com/rss/defense",                               "lang": "en", "region": "global", "reliability": 0.75, "category": "military"},
-    {"url": "https://www.flightglobal.com/rss/defence-news.xml",                  "lang": "en", "region": "global", "reliability": 0.75, "category": "military"},
-    {"url": "https://maritime-executive.com/rss/articles",                        "lang": "en", "region": "global", "reliability": 0.72, "category": "naval"},
-    {"url": "https://www.lloyd'slist.com/rss",                                    "lang": "en", "region": "global", "reliability": 0.72, "category": "naval"},
-    {"url": "https://www.tankeroperator.com/rss/",                                "lang": "en", "region": "global", "reliability": 0.65, "category": "naval"},
-    {"url": "https://www.seatrade-maritime.com/rss",                              "lang": "en", "region": "global", "reliability": 0.68, "category": "naval"},
-    {"url": "https://www.eia.gov/rss/todayinenergy.xml",                          "lang": "en", "region": "global", "reliability": 0.82, "category": "energy"},
-    {"url": "https://oilprice.com/rss",                                           "lang": "en", "region": "global", "reliability": 0.65, "category": "energy"},
-    {"url": "https://www.petroleum-economist.com/rss",                            "lang": "en", "region": "ME",     "reliability": 0.70, "category": "energy"}
+    {
+      "url": "https://www.aljazeera.com/xml/rss/all.xml",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://www.jpost.com/rss/rssfeedsheadlines.aspx",
+      "lang": "en",
+      "region": "IL",
+      "reliability": 0.7,
+      "category": "news"
+    },
+    {
+      "url": "https://www.middleeasteye.net/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://feeds.reuters.com/rssFeed/topNews",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.85,
+      "category": "wire"
+    },
+    {
+      "url": "https://feeds.bbci.co.uk/news/world/middle_east/rss.xml",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.82,
+      "category": "news"
+    },
+    {
+      "url": "https://apnews.com/rss/apf-intlnews",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.83,
+      "category": "wire"
+    },
+    {
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "news"
+    },
+    {
+      "url": "https://www.theguardian.com/world/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "news"
+    },
+    {
+      "url": "https://apnews.com/hub/world-news?rss=true",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.83,
+      "category": "wire"
+    },
+    {
+      "url": "https://foreignpolicy.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.defensenews.com/arc/outboundfeeds/rss/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "military"
+    },
+    {
+      "url": "https://www.janes.com/feeds/news",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.82,
+      "category": "military"
+    },
+    {
+      "url": "https://breakingdefense.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "military"
+    },
+    {
+      "url": "https://www.defensedaily.com/feed",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "military"
+    },
+    {
+      "url": "https://www.military.com/rss-feeds/content?id=news",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.7,
+      "category": "military"
+    },
+    {
+      "url": "https://www.timesofisrael.com/feed/",
+      "lang": "en",
+      "region": "IL",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://www.timesofisrael.com/feed/",
+      "lang": "en",
+      "region": "IL",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://www.ynetnews.com/RSS/Category/3082",
+      "lang": "en",
+      "region": "IL",
+      "reliability": 0.7,
+      "category": "news"
+    },
+    {
+      "url": "https://www.i24news.tv/en/rss",
+      "lang": "en",
+      "region": "IL",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://www.arabnews.com/rss.xml",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://english.alarabiya.net/tools/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.62,
+      "category": "news"
+    },
+    {
+      "url": "https://www.dailysabah.com/rss",
+      "lang": "en",
+      "region": "TR",
+      "reliability": 0.6,
+      "category": "news"
+    },
+    {
+      "url": "https://www.aa.com.tr/en/rss/default?cat=world",
+      "lang": "en",
+      "region": "TR",
+      "reliability": 0.62,
+      "category": "wire"
+    },
+    {
+      "url": "https://parstoday.com/en/rss",
+      "lang": "en",
+      "region": "IR",
+      "reliability": 0.42,
+      "category": "state"
+    },
+    {
+      "url": "https://sana.sy/?feed=rss2",
+      "lang": "en",
+      "region": "SY",
+      "reliability": 0.35,
+      "category": "state"
+    },
+    {
+      "url": "https://reliefweb.int/updates/rss.xml?search=middle+east",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.75,
+      "category": "humanitarian"
+    },
+    {
+      "url": "https://www.occrp.org/en/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "investigative"
+    },
+    {
+      "url": "https://bellingcat.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "osint"
+    },
+    {
+      "url": "https://www.understandingwar.org/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "analysis"
+    },
+    {
+      "url": "https://warontherocks.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.crisisgroup.org/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "analysis"
+    },
+    {
+      "url": "https://acleddata.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "analysis"
+    },
+    {
+      "url": "https://theintercept.com/feed/?rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.7,
+      "category": "investigative"
+    },
+    {
+      "url": "https://consortiumnews.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.6,
+      "category": "news"
+    },
+    {
+      "url": "https://www.almonitor.com/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.75,
+      "category": "analysis"
+    },
+    {
+      "url": "https://carnegieendowment.org/rss/solr?lang=en&q=%22middle+east%22",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.mei.edu/rss.xml",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.iiss.org/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.82,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.chathamhouse.org/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.rand.org/paf/news.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.sipri.org/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.82,
+      "category": "analysis"
+    },
+    {
+      "url": "https://kyivindependent.com/feed/",
+      "lang": "en",
+      "region": "UA",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://www.ukrinform.net/rss/block-ato",
+      "lang": "en",
+      "region": "UA",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://english.nv.ua/rss/",
+      "lang": "en",
+      "region": "UA",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://meduza.io/en/rss/all",
+      "lang": "en",
+      "region": "RU",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://theins.ru/en/feed",
+      "lang": "en",
+      "region": "RU",
+      "reliability": 0.7,
+      "category": "investigative"
+    },
+    {
+      "url": "https://www.dawn.com/feeds/home",
+      "lang": "en",
+      "region": "PK",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://tribune.com.pk/feed",
+      "lang": "en",
+      "region": "PK",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://www.thehindu.com/news/international/feeder/default.rss",
+      "lang": "en",
+      "region": "IN",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
+      "lang": "en",
+      "region": "IN",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://www.france24.com/en/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "news"
+    },
+    {
+      "url": "https://www.dw.com/en/rss/top-stories/s-9097",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.76,
+      "category": "news"
+    },
+    {
+      "url": "https://www.euronews.com/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://www.aljazeera.com/xml/rss/arabic.xml",
+      "lang": "ar",
+      "region": "ME",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://www.alarabiya.net/ar/rss.xml",
+      "lang": "ar",
+      "region": "ME",
+      "reliability": 0.62,
+      "category": "news"
+    },
+    {
+      "url": "https://arabic.rt.com/rss/",
+      "lang": "ar",
+      "region": "global",
+      "reliability": 0.4,
+      "category": "state"
+    },
+    {
+      "url": "https://www.bbc.com/arabic/index.xml",
+      "lang": "ar",
+      "region": "ME",
+      "reliability": 0.8,
+      "category": "news"
+    },
+    {
+      "url": "https://www.france24.com/ar/rss",
+      "lang": "ar",
+      "region": "ME",
+      "reliability": 0.75,
+      "category": "news"
+    },
+    {
+      "url": "https://aawsat.com/rss.xml",
+      "lang": "ar",
+      "region": "ME",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://www.alquds.co.uk/?feed=rss2",
+      "lang": "ar",
+      "region": "ME",
+      "reliability": 0.6,
+      "category": "news"
+    },
+    {
+      "url": "https://www.aa.com.tr/ar/rss/default?cat=world",
+      "lang": "ar",
+      "region": "ME",
+      "reliability": 0.62,
+      "category": "wire"
+    },
+    {
+      "url": "https://www.iran.ru/rss/all",
+      "lang": "ru",
+      "region": "IR",
+      "reliability": 0.45,
+      "category": "news"
+    },
+    {
+      "url": "https://meduza.io/rss/all",
+      "lang": "ru",
+      "region": "RU",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://novayagazeta.eu/rss",
+      "lang": "ru",
+      "region": "RU",
+      "reliability": 0.7,
+      "category": "investigative"
+    },
+    {
+      "url": "https://www.bbc.com/russian/index.xml",
+      "lang": "ru",
+      "region": "RU",
+      "reliability": 0.8,
+      "category": "news"
+    },
+    {
+      "url": "https://www.rferl.org/api/z-ryyyxyijqp",
+      "lang": "ru",
+      "region": "RU",
+      "reliability": 0.75,
+      "category": "news"
+    },
+    {
+      "url": "https://www.haaretz.co.il/cmlink/1.1064988",
+      "lang": "he",
+      "region": "IL",
+      "reliability": 0.75,
+      "category": "news"
+    },
+    {
+      "url": "https://www.ynet.co.il/RSS/Category/3082",
+      "lang": "he",
+      "region": "IL",
+      "reliability": 0.7,
+      "category": "news"
+    },
+    {
+      "url": "https://www.mako.co.il/rss/news-military.xml",
+      "lang": "he",
+      "region": "IL",
+      "reliability": 0.68,
+      "category": "military"
+    },
+    {
+      "url": "https://rss.walla.co.il/feed/22",
+      "lang": "he",
+      "region": "IL",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://www.kan.org.il/rss/",
+      "lang": "he",
+      "region": "IL",
+      "reliability": 0.72,
+      "category": "news"
+    },
+
+    {
+      "url": "https://www.voanews.com/api/epiqq",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://www.rferl.org/api/ztmqxyijqp",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "news"
+    },
+    {
+      "url": "https://www.ndi.org/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.7,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.hrw.org/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "humanitarian"
+    },
+    {
+      "url": "https://www.amnesty.org/en/latest/rss/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.76,
+      "category": "humanitarian"
+    },
+    {
+      "url": "https://www.un.org/press/en/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "official"
+    },
+    {
+      "url": "https://news.un.org/feed/subscribe/en/news/topic/peace-and-security/feed/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "official"
+    },
+    {
+      "url": "https://reliefweb.int/updates/rss.xml?search=conflict",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "humanitarian"
+    },
+    {
+      "url": "https://www.nato.int/cps/en/natolive/news.htm?rss=true",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "official"
+    },
+    {
+      "url": "https://www.state.gov/rss-feeds/press-releases/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "official"
+    },
+    {
+      "url": "https://www.gov.uk/search/news-and-communications.atom?organisations%5B%5D=ministry-of-defence",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "official"
+    },
+    {
+      "url": "https://www.idf.il/en/rss/",
+      "lang": "en",
+      "region": "IL",
+      "reliability": 0.7,
+      "category": "official"
+    },
+    {
+      "url": "https://www.iaea.org/feeds/topnews.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "official"
+    },
+    {
+      "url": "https://www.lowyinstitute.org/the-interpreter/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.brookings.edu/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.cfr.org/rss/region/middle-east",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.8,
+      "category": "analysis"
+    },
+    {
+      "url": "https://thesoufancenter.org/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.criticalthreats.org/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.longwarjournal.org/feed",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "military"
+    },
+    {
+      "url": "https://www.start.umd.edu/news/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.navalnews.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "military"
+    },
+    {
+      "url": "https://www.thedrive.com/the-war-zone/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "military"
+    },
+    {
+      "url": "https://oryx.substack.com/feed",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "osint"
+    },
+    {
+      "url": "https://www.osintdefender.com/feed",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "osint"
+    },
+    {
+      "url": "https://www.bellingcat.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.7,
+      "category": "osint"
+    },
+    {
+      "url": "https://www.globalsecurity.org/security/library/news/rss/globalsec-news.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.68,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.armyupress.army.mil/Feeds/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://thebulletin.org/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://npolicy.org/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.armscontrol.org/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.middleeastmonitor.com/feed/",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.62,
+      "category": "news"
+    },
+    {
+      "url": "https://www.naharnet.com/stories/en/rss",
+      "lang": "en",
+      "region": "LB",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://www.lorientlejour.com/rss",
+      "lang": "fr",
+      "region": "LB",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://english.alaraby.co.uk/rss.xml",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.62,
+      "category": "news"
+    },
+    {
+      "url": "https://www.syriahr.com/en/feed/",
+      "lang": "en",
+      "region": "SY",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://syriadirect.org/feed/",
+      "lang": "en",
+      "region": "SY",
+      "reliability": 0.7,
+      "category": "news"
+    },
+    {
+      "url": "https://www.enabbaladi.net/archives/category/news/feed",
+      "lang": "ar",
+      "region": "SY",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://www.rudaw.net/rss/world",
+      "lang": "en",
+      "region": "IQ",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://shafaq.com/en/rss/Kurdestan",
+      "lang": "en",
+      "region": "IQ",
+      "reliability": 0.62,
+      "category": "news"
+    },
+    {
+      "url": "https://www.kurdistan24.net/rss/0",
+      "lang": "en",
+      "region": "IQ",
+      "reliability": 0.62,
+      "category": "news"
+    },
+    {
+      "url": "https://www.yemenfuture.net/feed",
+      "lang": "en",
+      "region": "YE",
+      "reliability": 0.6,
+      "category": "news"
+    },
+    {
+      "url": "https://www.saudigazette.com.sa/rss",
+      "lang": "en",
+      "region": "SA",
+      "reliability": 0.58,
+      "category": "news"
+    },
+    {
+      "url": "https://www.gulf-times.com/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.62,
+      "category": "news"
+    },
+    {
+      "url": "https://gulfnews.com/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://www.thenationalnews.com/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://www.khaleejtimes.com/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.62,
+      "category": "news"
+    },
+    {
+      "url": "https://www.hurriyetdailynews.com/rss",
+      "lang": "en",
+      "region": "TR",
+      "reliability": 0.6,
+      "category": "news"
+    },
+    {
+      "url": "https://www.bianet.org/english/rss",
+      "lang": "en",
+      "region": "TR",
+      "reliability": 0.65,
+      "category": "news"
+    },
+    {
+      "url": "https://jamestown.org/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "analysis"
+    },
+    {
+      "url": "https://euromaidanpress.com/feed/",
+      "lang": "en",
+      "region": "UA",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://babel.ua/en/rss",
+      "lang": "en",
+      "region": "UA",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://english.nv.ua/rss/",
+      "lang": "en",
+      "region": "UA",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://www.pravda.com.ua/eng/rss/view_news/",
+      "lang": "en",
+      "region": "UA",
+      "reliability": 0.7,
+      "category": "news"
+    },
+    {
+      "url": "https://intellinews.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.68,
+      "category": "news"
+    },
+    {
+      "url": "https://www.rusi.org/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.82,
+      "category": "analysis"
+    },
+    {
+      "url": "https://moderndiplomacy.eu/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.6,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.atlanticcouncil.org/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.mei.edu/publications/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.6,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.jewishvirtuallibrary.org/rss",
+      "lang": "en",
+      "region": "IL",
+      "reliability": 0.65,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.alzaytouna.net/en/?feed=rss2",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.6,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.ndu.edu.lb/rss",
+      "lang": "en",
+      "region": "LB",
+      "reliability": 0.65,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.spacewar.com/spacenews.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.65,
+      "category": "military"
+    },
+    {
+      "url": "https://spacenews.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "military"
+    },
+    {
+      "url": "https://www.airandspaceforces.com/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "military"
+    },
+    {
+      "url": "https://nationalinterest.org/rss.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.68,
+      "category": "analysis"
+    },
+    {
+      "url": "https://www.politico.eu/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "news"
+    },
+    {
+      "url": "https://www.economist.com/middle-east-and-africa/rss.xml",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.8,
+      "category": "analysis"
+    },
+    {
+      "url": "https://spectator.org/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.6,
+      "category": "news"
+    },
+    {
+      "url": "https://unhcr.org/rss/news.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "humanitarian"
+    },
+    {
+      "url": "https://www.icrc.org/en/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.8,
+      "category": "humanitarian"
+    },
+    {
+      "url": "https://www.msf.org/en/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.78,
+      "category": "humanitarian"
+    },
+    {
+      "url": "https://www.fao.org/newsroom/rss/en/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "humanitarian"
+    },
+    {
+      "url": "https://www.naval-technology.com/news/feed/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "military"
+    },
+    {
+      "url": "https://aviationweek.com/rss/defense",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "military"
+    },
+    {
+      "url": "https://www.flightglobal.com/rss/defence-news.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.75,
+      "category": "military"
+    },
+    {
+      "url": "https://maritime-executive.com/rss/articles",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "naval"
+    },
+    {
+      "url": "https://lloydslist.maritimeintelligence.informa.com/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.72,
+      "category": "naval"
+    },
+    {
+      "url": "https://www.tankeroperator.com/rss/",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.65,
+      "category": "naval"
+    },
+    {
+      "url": "https://www.seatrade-maritime.com/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.68,
+      "category": "naval"
+    },
+    {
+      "url": "https://www.eia.gov/rss/todayinenergy.xml",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.82,
+      "category": "energy"
+    },
+    {
+      "url": "https://oilprice.com/rss",
+      "lang": "en",
+      "region": "global",
+      "reliability": 0.65,
+      "category": "energy"
+    },
+    {
+      "url": "https://www.petroleum-economist.com/rss",
+      "lang": "en",
+      "region": "ME",
+      "reliability": 0.7,
+      "category": "energy"
+    }
   ]
 }

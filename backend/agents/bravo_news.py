@@ -138,52 +138,36 @@ def _extract_geo(item: ET.Element) -> tuple[Optional[float], Optional[float]]:
 
 def _parse_feed(xml_bytes: bytes, feed_url: str) -> list[dict]:
     """
-    Parse an RSS 2.0 or Atom feed and return a list of normalised entry dicts:
+    Parse an RSS 2.0 or Atom feed using feedparser (lenient, handles encoding
+    issues, BOM, invalid tokens) and return a list of normalised entry dicts:
         {url, title, summary, geo_lat, geo_lon}
-    Silently skips malformed entries.
     """
     import re
+    import feedparser
+
     entries: list[dict] = []
     try:
-        root = ET.fromstring(xml_bytes)
-    except ET.ParseError as exc:
-        logger.warning(f"[BRAVO-N] XML parse error for {feed_url}: {exc}")
+        parsed = feedparser.parse(xml_bytes)
+    except Exception as exc:
+        logger.warning(f"[BRAVO-N] feedparser error for {feed_url}: {exc}")
         return entries
 
-    # RSS 2.0
-    channel = root.find("channel")
-    items = channel.findall("item") if channel is not None else []
+    if parsed.bozo and not parsed.entries:
+        logger.warning(f"[BRAVO-N] Malformed feed (bozo={parsed.bozo_exception}) for {feed_url} — no entries")
+        return entries
 
-    # Atom
-    atom_ns = "http://www.w3.org/2005/Atom"
-    if not items:
-        items = root.findall(f"{{{atom_ns}}}entry")
+    for entry in parsed.entries:
+        title   = (entry.get("title") or "").strip()
+        url     = (entry.get("link") or entry.get("id") or "").strip()
+        summary = ""
 
-    for item in items:
-        # Use explicit is-not-None checks — ET.Element has deprecated truth-value testing
-        title_el = item.find("title")
-        if title_el is None:
-            title_el = item.find(f"{{{atom_ns}}}title")
-        title = (title_el.text or "").strip() if title_el is not None else ""
+        # Try content first, then summary
+        if entry.get("content"):
+            summary = entry["content"][0].get("value", "")
+        if not summary:
+            summary = entry.get("summary", "") or ""
 
-        link_el = item.find("link")
-        if link_el is None:
-            link_el = item.find(f"{{{atom_ns}}}link")
-        if link_el is not None:
-            url = link_el.text or link_el.get("href", "")
-        else:
-            guid_el = item.find("guid")
-            url = guid_el.text if guid_el is not None else ""
-        url = (url or "").strip()
-
-        desc_el = item.find("description")
-        if desc_el is None:
-            desc_el = item.find(f"{{{atom_ns}}}summary")
-        if desc_el is None:
-            desc_el = item.find(f"{{{atom_ns}}}content")
-        if desc_el is None:
-            desc_el = item.find("content:encoded", _NS)
-        summary = (desc_el.text or "").strip() if desc_el is not None else ""
+        # Strip HTML tags
         if "<" in summary:
             summary = re.sub(r"<[^>]+>", " ", summary).strip()
             summary = re.sub(r"\s{2,}", " ", summary)
@@ -191,7 +175,14 @@ def _parse_feed(xml_bytes: bytes, feed_url: str) -> list[dict]:
         if not title and not summary:
             continue
 
-        geo_lat, geo_lon = _extract_geo(item)
+        # Geo coords from feedparser's georss support
+        geo_lat = entry.get("geo_lat") or entry.get("where", {}).get("latitude") if hasattr(entry.get("where", None), "get") else None
+        geo_lon = entry.get("geo_long") or entry.get("where", {}).get("longitude") if hasattr(entry.get("where", None), "get") else None
+        try:
+            geo_lat = float(geo_lat) if geo_lat is not None else None
+            geo_lon = float(geo_lon) if geo_lon is not None else None
+        except (TypeError, ValueError):
+            geo_lat = geo_lon = None
 
         entries.append({
             "url":     url,
