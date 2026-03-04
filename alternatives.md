@@ -1,173 +1,150 @@
-# Alternative Data Sources — Implementation Notes
+# Alternative & Future Data Sources
 
-This document outlines implementation approaches for additional data sources that could be integrated into ARES in the future. These are alternatives/supplements to the current GDELT integration.
+This document tracks data sources that were planned as future additions. Items that have since been implemented are marked accordingly.
 
 ---
 
 ## ACLED (Armed Conflict Location & Event Data)
 
-**Status**: Not implemented  
-**Priority**: Medium (high-value conflict data)
+**Status**: IMPLEMENTED (`backend/agents/acled_fetcher.py` — Agent CHARLIE-A)
+**Feature flag**: `ENABLE_ACLED` (default `false` — requires free registration)
 
-### Overview
-ACLED provides real-time conflict event data with geographic coordinates, actor information, and fatality counts for 170+ countries.
-
-### API Details
-- **Base URL**: `https://api.acleddata.com/acled/read`
-- **Authentication**: Free API token required (register at acleddata.com)
-- **Fields**: `event_type`, `sub_event_type`, `country`, `location`, `lat`, `lon`, `fatalities`, `actors`, `source`
-- **Polling**: Every 15 minutes recommended
-
-### Implementation
-
-**1. Add config to `backend/config.py`:**
-```python
-ACLED_API_KEY: str = Field(default="")
-ACLED_POLL_INTERVAL: int = Field(default=900)
-```
-
-**2. Create agent `backend/agents/acled_fetcher.py`:**
-```python
-# Pseudocode structure
-async def fetch_acled_events():
-    params = {
-        "key": settings.ACLED_API_KEY,
-        "iso": "ISR,PSE,LBN,SYR,IRQ,YEM,IRN,SAU,ARE,KWT,BHR,OMN",  # ME countries
-        "event_type": "Battle,Explosion,Violence against civilians",
-        "format": "json",
-        "limit": 500,
-    }
-    response = await client.get(f"{ACLED_API_URL}?{urlencode(params)}")
-    # Parse and convert to ConflictIntel
-    # Geocode if lat/lon missing
-```
-
-**3. Add model to `backend/models/event.py`:**
-```python
-class AcledConflictEvent(BaseModel):
-    event_id: str
-    event_date: datetime
-    event_type: str
-    sub_event_type: str
-    country: str
-    location: str
-    lat: float
-    lon: float
-    fatalities: int
-    actors: list[str]
-    source: str
-```
-
-**4. Wire in `main.py`:**
-- Import `poll_acled` agent
-- Add to `lifespan()` if `settings.ENABLE_ACLED`
-
-**5. Add frontend service:**
-- `frontend/src/services/acled.ts` — fetch via backend `/api/acled-events`
-- Add to event store merge logic
+### What was built
+- Full REST API agent polling `https://api.acleddata.com/acled/read`
+- Both `ACLED_API_KEY` and `ACLED_EMAIL` passed in every request (ACLED requirement)
+- Covers ISR, PSE, LBN, SYR, IRQ, IRN, YEM, SAU, ARE, KWT, BHR, QAT, OMN, JOR, EGY, LBY, TUN, DZA, MAR, SDN, ETH, SOM, DJI, ERI, TUR, ARM, AZE, GEO, UKR, RUS
+- Category mapping: ACLED `event_type` / `sub_event_type` → `EventCategory`
+- DST α = 0.80 (high reliability; cross-referenced source)
+- SHA-256 deduplication by `event_id_cnty`, TTL 24 hours
+- Circuit breaker: 3 failures → open for 5 minutes, cache TTL 30 minutes
+- Fatality count → `casualty_count`; if fatalities > 0 → `is_confirmed = True`
+- Frontend service: `frontend/src/services/acled.js` → `fetchAcledEvents()`
+- REST endpoint: `GET /api/acled-events`
 
 ### Notes
-- ACLED is primarily a historical/analytical dataset with ~2-week lag on real-time data
-- Use as supplement to Telegram/RSS, not primary source
-- α reliability weight: ~0.75 for cross-referenced events
+- ACLED has a ~2-week lag on some lower-priority regions
+- Register free at https://acleddata.com/register/ (instant approval)
+- Both key AND email are required per request — missing either causes the agent to sleep
 
 ---
 
 ## UCDP (Uppsala Conflict Data Program)
 
-**Status**: Not implemented  
-**Priority**: Low (primarily historical data)
+**Status**: IMPLEMENTED (`backend/agents/ucdp_fetcher.py` — Agent CHARLIE-B)
+**Feature flag**: `ENABLE_UCDP` (default `true` — no credentials required)
 
-### Overview
-UCDP provides the GED (Georeferenced Event Dataset) with detailed conflict data. More academically rigorous but less real-time than ACLED.
+### What was built
+- REST API agent polling `https://ucdpapi.pcr.uu.se/api/gedevents/24.1`
+- Rolling lookback window — queries events from last `UCDP_LOOKBACK_DAYS` (default 30) days
+- `type_of_violence` mapping: 1 (state-based) → `ground_strike`, 2 (non-state) → `ground_strike`, 3 (one-sided/civilian) → `casualty_report`
+- Total deaths = `deaths_civilians + deaths_a + deaths_b`
+- DST α = 0.78 (academically peer-reviewed; lower velocity than ACLED)
+- SHA-256 deduplication by UCDP `id`, TTL 48 hours
+- Circuit breaker: 3 failures → open for 10 minutes, cache TTL 1 hour
+- Frontend service: `frontend/src/services/ucdp.js` → `fetchUcdpEvents()`
+- REST endpoint: `GET /api/ucdp-events`
 
-### API Details
-- **Data URL**: `https://ucdp.uu.se/downloads/ged/ged231-full.json` (JSON export)
-- **Fields**: `conflict_id`, `event_type`, `country`, `location`, `latitude`, `longitude`, `deaths`
-- **Polling**: Weekly or monthly (data is not real-time)
-
-### Implementation Approach
-
-**1. Create `backend/agents/ucdp_fetcher.py`:**
-- Fetch full GED JSON (~yearly updates)
-- Parse and store to database
-- Don't poll frequently — data changes slowly
-
-**2. Notes:**
-- Best used as baseline/conflict context, not real-time events
-- Good for historical trend analysis
-- Less useful for live dashboard but valuable for pattern analysis
+### Notes
+- Previous docs said UCDP was static JSON dump — this is incorrect; UCDP has had a live REST API since v22+
+- The REST API endpoint is `ucdpapi.pcr.uu.se`, not the download page at `ucdp.uu.se/downloads`
 
 ---
 
 ## NGA Maritime Warnings (NAVAREA)
 
-**Status**: Not implemented  
-**Priority**: Low (niche maritime data)
+**Status**: IMPLEMENTED (`backend/agents/nga_warnings.py` — Agent CHARLIE-C)
+**Feature flag**: `ENABLE_NGA` (default `true` — no credentials required)
 
-### Overview
-National Geospatial-Intelligence Agency publishes NAVAREA broadcast warnings for maritime navigation safety.
-
-### Source
-- **URL**: `https://msi.gs.mil/api/publications/broadcast-warn`
-- **Format**: XML/JSON
-- **Content**: Navigation warnings, hazards, military exercises
-
-### Implementation
-
-**1. Create `backend/agents/nga_warnings.py`:**
-```python
-async def fetch_naval_warnings():
-    # Parse NAVAREA warnings
-    # Extract coordinates for hazard zones
-    # Convert to events or hotspots
-```
-
-**2. Use case:**
-- Display military exercise areas on map
-- Navigation hazard warnings
-- Not conflict-intelligence focused
+### What was built
+- REST API agent polling `https://msi.gs.mil/api/publications/broadcast-warn?output=json&status=active`
+- Handles both response shapes: plain `list` and `{"broadcastWarn": [...]}`
+- Coordinate extraction via regex from warning text — DMS format (`°`, `'`, `N/S/E/W`)
+- Always emits `EventCategory.naval_event`
+- Confidence 0.75, DST α = 0.82 (official government source)
+- SHA-256 deduplication by `msgNum`, TTL 24 hours
+- Circuit breaker: 3 failures → open for 5 minutes, cache TTL 30 minutes
+- REST endpoint: `GET /api/nga-warnings`
+- Included in `frontend/src/services/ucdp.js` → `fetchNgaWarnings()`
 
 ---
 
-## Future: Expanding RSS Feeds
+## RSS Feed Expansion (170+ sources)
 
-The current `bravo_news.py` already handles RSS. To expand from ~3 feeds to 170+:
+**Status**: IMPLEMENTED (`backend/data/rss_feeds.json` + updated `bravo_news.py`)
 
-**1. Create `backend/data/rss_feeds.json`:**
-```json
-{
-  "english": [
-    "https://www.bbc.com/news/rss.xml",
-    "https://feeds.reuters.com/reuters/worldNews"
-  ],
-  "arabic": [
-    "https://www.alarabiya.net/rss",
-    "https://www.almayadeen.net/mobile/rss"
-  ],
-  "russian": [
-    "https://meduza.io/rss",
-    "https://ria.ru/export/rss2/index.xml"
-  ]
-}
-```
-
-**2. Update config:**
-```python
-RSS_FEEDS_FILE: str = Field(default="data/rss_feeds.json")
-```
-
-**3. Modify `bravo_news.py`:**
-- Load feeds from JSON file instead of hardcoded list
-- Add language detection to route to appropriate pipeline
+### What was built
+- `backend/data/rss_feeds.json`: 170+ feeds with `{url, lang, region, reliability, category}` per entry
+- `bravo_news._load_feeds()`: loads URLs + per-feed reliability α from JSON; falls back to 3 hardcoded feeds in `settings.RSS_FEEDS` if file missing
+- Per-feed DST α weights loaded from `"reliability"` field — replaces the old 3-entry hardcoded dict
+- Feed coverage: EN wire services (Reuters, AP, BBC), Israeli outlets (Haaretz, ToI, Ynet), ME regional (Al Jazeera, Arab News, Al Arabiya), Turkish (Daily Sabah, AA), Iranian state (IRNA, PressTV — α 0.45), Russian/Ukrainian, defence trade press (Janes, Defense News, Breaking Defense), and 100+ more
 
 ---
 
-## Priority Recommendation
+## Future: Globe.gl 3D View
 
-1. **ACLED** — Medium priority, high value for conflict event enrichment
-2. **RSS Expansion** — Easy win, just configuration
-3. **UCDP** — Low priority, mostly historical data
-4. **NGA** — Low priority, niche maritime use case
+**Status**: Not implemented
+**Priority**: Low — the Deck.gl 2D map is working well; 3D globe adds complexity without clear intelligence value
 
-The current GDELT integration provides a good foundation for news-based geo-events. ACLED would be the next highest-value addition for conflict-specific data.
+### What would be needed
+- `npm install globe.gl three @types/three`
+- `frontend/src/components/GlobeMap.jsx` — Three.js based sphere + atmosphere shader
+- Mode toggle between 2D (DeckGLMap) and 3D (GlobeMap) in App.jsx
+- Arc layers for trade routes / missile trajectories (stretch goal)
+
+---
+
+## Future: AIS Enhancement
+
+**Status**: Partial — `bravo_marine.py` exists but requires commercial MarineTraffic key
+
+### Free alternatives worth evaluating
+- **AISHub** (https://www.aishub.net/) — free tier, crowd-sourced AIS, API key available
+- **MarineTraffic free tier** — limited to 100 credits/month; not suitable for continuous polling
+- **VesselFinder** — similar to MarineTraffic, limited free tier
+- **OpenCPN / gpsd** — receive AIS directly from a hardware SDR dongle (no API, no cost)
+
+If implementing AISHub:
+- `bravo_marine.py`: change base URL to `https://data.aishub.net/ws.php`
+- Add `AISHUB_API_KEY` to `config.py`
+- Filter to Red Sea + Persian Gulf bounding boxes
+
+---
+
+## Future: OpenSky Network (Aircraft)
+
+**Status**: Not needed — ADSB.lol (keyless) already covers military transponders adequately
+
+### Notes
+- OpenSky requires account registration and has stricter rate limits than ADSB.lol
+- ADSB.lol's `/v2/mil` feed specifically targets military ICAO blocks — better fit for ARES
+
+---
+
+## Future: Additional Panel Components
+
+**Status**: Not implemented
+**From original `plan.md`**:
+
+| Panel | Purpose |
+|---|---|
+| `ConflictPanel.jsx` | Live ACLED/UCDP events with source/category filters |
+| `MilitaryPanel.jsx` | Military bases, live flights, vessels in one view |
+| `NewsPanel.jsx` | Aggregated news feed with language/region filter |
+| `UnrestPanel.jsx` | Protest and civil unrest events |
+
+These would be sidebar tabs or collapsible drawers. The current `EventLog.jsx` / `EventCard.jsx` serves this purpose in a simpler form.
+
+---
+
+## Future: Day/Night Terminator Overlay
+
+**Status**: Not implemented
+
+A solar terminator line (day/night boundary) can be drawn on the map using the current UTC time and a great circle calculation. Useful for judging air-raid timing and satellite pass windows.
+
+Implementation: add a `PolygonLayer` or `PathLayer` in `DeckGLMap.jsx` that computes the terminator boundary every minute using the [SunCalc](https://github.com/mourner/suncalc) library (already a common Deck.gl example).
+
+---
+
+*Project ARES — Alternatives & Future Sources — 2026-03-04*
+*ACLED / UCDP / NGA / 170+ RSS feeds: all implemented on `acled` branch*

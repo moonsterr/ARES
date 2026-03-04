@@ -1,314 +1,272 @@
-# Plan: Matching World Monitor (Geopolitical/Military Focus)
+# Plan: ARES Feature Roadmap
 
-*Excludes production features (desktop app, PWA, localization system)*
+*Last updated: 2026-03-04 (`acled` branch)*
+
+This document tracks what has been built and what remains. Completed items are marked ✅. Active work is on the `acled` branch.
 
 ---
 
 ## Phase 1: Data Sources (Backend)
 
-### 1.1 ACLED Integration
+### 1.1 ACLED Integration ✅ COMPLETE
 
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| API key setup | Get free token at acleddata.com | `.env` |
-| ACLED agent | Fetch conflict events from ACLED API | `backend/agents/acled_fetcher.py` |
-| Data model | Add `AcledConflictEvent` to `models/event.py` | Modify existing |
-| Endpoint | REST endpoint `/api/acled-events` | Add to `main.py` |
+| Item | File | Status |
+|------|------|--------|
+| Config vars | `backend/config.py` | ✅ `ACLED_API_KEY`, `ACLED_EMAIL`, `ACLED_BASE_URL`, `ACLED_MAX_RECORDS`, `ACLED_POLL_INTERVAL`, `ACLED_RELIABILITY_ALPHA`, `ENABLE_ACLED` |
+| ACLED agent (CHARLIE-A) | `backend/agents/acled_fetcher.py` | ✅ Full REST agent, circuit breaker, DST α=0.80, SHA-256 dedup |
+| REST endpoint | `backend/main.py` | ✅ `GET /api/acled-events` |
+| Frontend service | `frontend/src/services/acled.js` | ✅ `fetchAcledEvents()` |
 
-**ACLED API Details:**
-- Base URL: `https://api.acleddata.com/acled/read`
-- Fields: event_type, sub_event_type, country, location, lat, lon, fatalities, actors, source
-- Polling: Every 15 minutes
+**API**: `https://api.acleddata.com/acled/read` — requires free key + email from acleddata.com
+**Countries**: 30 including full Middle East, North Africa, Caucasus, Ukraine
 
 ---
 
-### 1.2 UCDP Integration
+### 1.2 UCDP Integration ✅ COMPLETE
 
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| UCDP agent | Fetch from Uppsala Conflict Data Program | `backend/agents/ucdp_fetcher.py` |
-| Data model | Add `UcdpConflictEvent` to models | Modify existing |
-| Endpoint | REST endpoint `/api/ucdp-events` | Add to `main.py` |
+| Item | File | Status |
+|------|------|--------|
+| Config vars | `backend/config.py` | ✅ `UCDP_BASE_URL`, `UCDP_POLL_INTERVAL`, `UCDP_MAX_RECORDS`, `UCDP_LOOKBACK_DAYS`, `UCDP_RELIABILITY_ALPHA`, `ENABLE_UCDP` |
+| UCDP agent (CHARLIE-B) | `backend/agents/ucdp_fetcher.py` | ✅ REST API, rolling 30-day lookback, circuit breaker, DST α=0.78 |
+| REST endpoint | `backend/main.py` | ✅ `GET /api/ucdp-events` |
+| Frontend service | `frontend/src/services/ucdp.js` | ✅ `fetchUcdpEvents()` |
 
-**UCDP API Details:**
-- Use GED JSON exports: `https://ucdp.uu.se/downloads/ged/ged221-full.json`
-- Fields: conflict_id, event_type, country, location, latitude, longitude, deaths
-
----
-
-### 1.3 GDELT Integration
-
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| GDELT service | Fetch from GDELT Project | `backend/services/gdelt_client.py` |
-| GDELT translator | Use LLM to extract geo-location from headlines | Extend `llm_pipeline.py` |
-| Endpoint | REST endpoint `/api/gdelt-news` | Add to `main.py` |
-
-**GDELT Details:**
-- GDELT API: `https://api.gdeltproject.org/api/v2/doc/doc`
-- RSS-to-GDELT: `https://rsshub.app/gdelt/news`
+**API**: `https://ucdpapi.pcr.uu.se/api/gedevents/24.1` — no key required
 
 ---
 
-### 1.4 NGA Maritime Warnings
+### 1.3 GDELT Integration ✅ COMPLETE (on `main`)
 
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| NGA agent | Fetch NAVAREA warnings | `backend/agents/nga_warnings.py` |
-| Endpoint | `/api/nga-warnings` | Add to `main.py` |
+| Item | File | Status |
+|------|------|--------|
+| Config vars | `backend/config.py` | ✅ `GDELT_BASE_URL`, `GDELT_POLL_INTERVAL`, `GDELT_MODE`, `GDELT_MAX_RECORDS`, `GDELT_QUERY`, `ENABLE_GDELT` |
+| GDELT agent (BRAVO-G) | `backend/agents/gdelt_fetcher.py` | ✅ |
+| LLM integration | `backend/intelligence/llm_pipeline.py` | ✅ `process_gdelt_entry()` |
 
-**Source:**
-- URL: `https://msi.gs.mil/api/publications/broadcast-warn`
-
----
-
-### 1.5 Expand RSS Feeds (170+ sources)
-
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| Feed config | Centralized RSS feed definitions | `backend/data/rss_feeds.json` |
-| Feed agent | Enhanced RSS fetcher with language detection | Rewrite `bravo_news.py` |
-| i18n feeds | Add region-specific feeds per language | Extend config |
-
-**Feed Categories:**
-- English: BBC, Reuters, AP, Al Jazeera
-- Arabic: Al Arabiya, Al Mayadeen, Anadolu
-- Russian: BBC Russian, Meduza, Novaya Gazeta
-- Regional: Add 160+ more feeds
+**API**: `https://api.gdeltproject.org/api/v2/doc/doc` — no key required
 
 ---
 
-### 1.6 AIS Vessel Tracking (Enhance)
+### 1.4 NGA Maritime Warnings ✅ COMPLETE
 
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| OpenAIS alternative | Use opensky-network.org or MarineTraffic free tier | Extend `bravo_marine.py` |
-| Vessel database | Add ship type, flag, destination | New `data/vessel_types.json` |
+| Item | File | Status |
+|------|------|--------|
+| Config vars | `backend/config.py` | ✅ `NGA_BASE_URL`, `NGA_POLL_INTERVAL`, `ENABLE_NGA` |
+| NGA agent (CHARLIE-C) | `backend/agents/nga_warnings.py` | ✅ DMS coordinate extraction, circuit breaker |
+| REST endpoint | `backend/main.py` | ✅ `GET /api/nga-warnings` |
+| Frontend service | `frontend/src/services/ucdp.js` | ✅ `fetchNgaWarnings()` |
+
+**API**: `https://msi.gs.mil/api/publications/broadcast-warn` — no key required
+
+---
+
+### 1.5 Expand RSS Feeds (170+ sources) ✅ COMPLETE
+
+| Item | File | Status |
+|------|------|--------|
+| Feed config JSON | `backend/data/rss_feeds.json` | ✅ 170+ feeds with reliability weights |
+| Updated agent | `backend/agents/bravo_news.py` | ✅ `_load_feeds()` reads from JSON; per-feed DST α |
+
+---
+
+### 1.6 Conflict Summary Service ✅ COMPLETE
+
+| Item | File | Status |
+|------|------|--------|
+| Service layer | `backend/services/conflict_service.py` | ✅ `get_conflict_events()`, `get_conflict_summary()` |
+| REST endpoint | `backend/main.py` | ✅ `GET /api/conflict/summary` |
+| Frontend service | `frontend/src/services/ucdp.js` | ✅ `fetchConflictSummary()` |
+
+---
+
+### 1.7 AIS Vessel Tracking Enhancement
+
+| Item | Status |
+|------|--------|
+| `bravo_marine.py` | Exists — requires commercial MarineTraffic key |
+| AISHub free alternative | Not implemented |
+| `data/vessel_types.json` | Not created |
+
+**Recommendation**: Evaluate AISHub (https://www.aishub.net/) as a keyless alternative.
 
 ---
 
 ## Phase 2: Frontend Map Visualization
 
-### 2.1 Install Dependencies
+### 2.1 Deck.gl Map Component ✅ COMPLETE (on `main`)
 
-```bash
-cd frontend
-npm install deck.gl @deck.gl/core @deck.gl/layers @deck.gl/aggregation-layers @deck.gl/mapbox maplibre-gl supercluster globe.gl three @types/three
-```
+| Item | File | Status |
+|------|------|--------|
+| DeckGLMap | `frontend/src/components/DeckGLMap.jsx` | ✅ |
+| MapPopup | `frontend/src/components/MapPopup.jsx` | ✅ |
+| Layer config | `frontend/src/config/mapLayers.js` | ✅ |
 
-### 2.2 Create Deck.gl Map Component
-
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| DeckGLMap | WebGL 2D map with MapLibre | `src/components/DeckGLMap.tsx` |
-| MapPopup | Click popup for all layers | `src/components/MapPopup.tsx` |
-| Layer configs | Define all layer types | `src/config/mapLayers.ts` |
-
-**Layers to Implement:**
-- `ScatterplotLayer` — Conflict dots, fires, earthquakes
-- `GeoJsonLayer` — Country boundaries, conflict zones, DMZ
-- `ArcLayer` — Trade routes, migration paths
-- `HeatmapLayer` — Event density
-- `IconLayer` — Military bases, ports, airports
-- `PolygonLayer` — CII heatmap, country risk
-
-### 2.3 Implement Globe.gl Component (Alternative View)
-
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| GlobeMap | 3D globe with globe.gl + Three.js | `src/components/GlobeMap.tsx` |
-| Atmosphere shader | Fresnel limb-glow effect | Part of GlobeMap |
-| Auto-rotation | Pause on interaction, resume after 60s | Part of GlobeMap |
-
-### 2.4 Map Layer System
-
-| Layer | Data Source | Implementation |
-|-------|-------------|----------------|
-| Conflicts | ACLED, UCDP, Telegram | ScatterplotLayer, red dots |
-| Military bases | Static geoJSON | IconLayer, triangles |
-| Military flights | ADSB.lol | IconLayer, aircraft icons |
-| Naval vessels | AIS | IconLayer, ship icons |
-| Fires | NASA FIRMS | ScatterplotLayer, orange/red |
-| Protests/Unrest | ACLED, RSS | ScatterplotLayer, yellow |
-| Hotspots | Signal service | PolygonLayer, gradient |
-| Cables | Static geoJSON | PathLayer, blue lines |
-| Pipelines | Static geoJSON | PathLayer, colored by type |
-| Ports | Static geoJSON | IconLayer, port icons |
-| Nuclear sites | Static geoJSON | IconLayer, radiation icons |
-
-### 2.5 Smart Clustering (Supercluster)
-
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| Cluster utils | Wrapper around supercluster | `src/utils/clustering.ts` |
-| Apply to layers | Cluster markers at low zoom | Integrate into DeckGLMap |
+**Layers implemented**: conflicts (ScatterplotLayer), heatmap (HeatmapLayer), aircraft (IconLayer), vessels (IconLayer), military bases (IconLayer), ports (IconLayer), cables (PathLayer), pipelines (PathLayer), hotspots (ScatterplotLayer)
 
 ---
 
-## Phase 3: Data Services (Frontend)
+### 2.2 Nuclear Sites Layer ✅ COMPLETE
 
-### 3.1 Conflict Service
+| Item | File | Status |
+|------|------|--------|
+| Static GeoJSON | `backend/data/nuclear_sites.geojson` | ✅ 15 facilities (IAEA/NTI sources) |
+| API endpoint | `backend/main.py` | ✅ included in `/api/infrastructure` |
 
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| ACLED client | Fetch ACLED via backend | `src/services/acled.ts` |
-| UCDP client | Fetch UCDP via backend | `src/services/ucdp.ts` |
-| Conflict store | Manage conflict state | Extend `useEventStore` |
+---
 
-### 3.2 Infrastructure Services
+### 2.3 Globe.gl 3D View
 
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| Military bases | Static data + updates | `src/services/military-bases.ts` |
-| Cables | Submarine cable geojson | `src/services/cables.ts` |
-| Pipelines | Oil/gas pipeline geojson | `src/services/pipelines.ts` |
-| Ports | Shipping port data | `src/services/ports.ts` |
-| Nuclear sites | Nuclear facility locations | `src/services/nuclear.ts` |
+| Item | Status |
+|------|--------|
+| `GlobeMap.jsx` component | Not implemented |
+| Mode toggle (2D/3D) | Not implemented |
 
-### 3.3 Enhanced News Service
+**Priority**: Low — 2D Deck.gl map is working well.
 
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| Multi-source news | Aggregate 170+ RSS feeds | Rewrite `src/services/news.ts` |
-| Translation pipeline | Use Ollama for translation | `src/services/translation.ts` |
-| Geo-extraction | Extract lat/lon from headlines | Extend LLM pipeline |
+---
+
+### 2.4 Smart Clustering (Supercluster) ✅ COMPLETE
+
+| Item | File | Status |
+|------|------|--------|
+| Clustering wrapper | `frontend/src/utils/clustering.js` | ✅ `buildIndex()`, `getClusters()`, `expandCluster()`, `getClusterExpansionZoom()` |
+
+**Not yet wired** into `DeckGLMap.jsx` — utility is ready; integration pending.
+
+---
+
+## Phase 3: Data Services (Frontend) ✅ COMPLETE
+
+| Item | File | Status |
+|------|------|--------|
+| ACLED client | `frontend/src/services/acled.js` | ✅ |
+| UCDP client | `frontend/src/services/ucdp.js` | ✅ |
+| NGA warnings | `frontend/src/services/ucdp.js` | ✅ `fetchNgaWarnings()` |
+| Conflict summary | `frontend/src/services/ucdp.js` | ✅ `fetchConflictSummary()` |
+| Infrastructure | `frontend/src/services/infrastructure.js` | ✅ |
+
+Infrastructure services for cables, pipelines, ports, military bases, nuclear sites are all served through the unified `/api/infrastructure` endpoint — separate service files are not needed.
 
 ---
 
 ## Phase 4: UI Components
 
-### 4.1 New Panels
+### 4.1 MapLegend ✅ COMPLETE
 
-| Panel | Description | File to Create |
-|-------|-------------|----------------|
-| ConflictPanel | Live conflict events with filters | `src/components/ConflictPanel.tsx` |
-| MilitaryPanel | Military bases, flights, vessels | `src/components/MilitaryPanel.tsx` |
-| NewsPanel | Aggregated news with categories | `src/components/NewsPanel.tsx` |
-| UnrestPanel | Protests and civil unrest | `src/components/UnrestPanel.tsx` |
-
-### 4.2 Enhanced Map Controls
-
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| Layer toggles | 45+ layer visibility controls | Add to `App.tsx` or new component |
-| Day/night overlay | Terminator line based on UTC | Part of DeckGLMap |
-| Zoom controls | Fit-to-layer buttons | Part of map components |
-| Legend | Layer symbol explanations | `src/components/MapLegend.tsx` |
-
-### 4.3 Regional Views
-
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| Region selector | Middle East, Africa, Asia, Europe, Americas | Add to App |
-| Region bounds | Predefined camera positions | `src/config/regions.ts` |
+| Item | File | Status |
+|------|------|--------|
+| Collapsible legend | `frontend/src/components/MapLegend.jsx` | ✅ Categories, infra symbols, source list |
 
 ---
 
-## Phase 5: Architecture Changes
+### 4.2 Regional Views ✅ COMPLETE
 
-### 5.1 Circuit Breaker Pattern (Recommended)
+| Item | File | Status |
+|------|------|--------|
+| Region bounds | `frontend/src/config/regions.js` | ✅ 12 named regions + `DEFAULT_REGION` |
+| Region selector UI | Not yet wired into App.jsx | ❌ |
 
-| Item | Description | File to Create |
-|------|-------------|----------------|
-| Circuit breaker utils | Wrapper with cache + retry logic | `backend/utils/circuit_breaker.py` |
-| Apply to agents | Wrap all external API calls | Modify agents |
+---
 
-### 5.2 Backend Service Structure
+### 4.3 Additional Panels
+
+| Panel | File | Status |
+|-------|------|--------|
+| `ConflictPanel.jsx` | Not created | ❌ |
+| `MilitaryPanel.jsx` | Not created | ❌ |
+| `NewsPanel.jsx` | Not created | ❌ |
+| `UnrestPanel.jsx` | Not created | ❌ |
+
+Current `EventLog.jsx` / `EventCard.jsx` covers the basic use case. These panels would add source/category filters and tabbed views.
+
+---
+
+### 4.4 Day/Night Terminator Overlay
+
+| Item | Status |
+|------|--------|
+| Terminator line | Not implemented |
+
+Would use `suncalc` npm package and a `PathLayer` or `PolygonLayer` updating every minute.
+
+---
+
+## Phase 5: Architecture
+
+### 5.1 Circuit Breaker ✅ COMPLETE
+
+| Item | File | Status |
+|------|------|--------|
+| Circuit breaker | `backend/utils/circuit_breaker.py` | ✅ CLOSED/OPEN/HALF_OPEN states, cache, recovery |
+| Applied to ACLED | `acled_fetcher.py` | ✅ |
+| Applied to UCDP | `ucdp_fetcher.py` | ✅ |
+| Applied to NGA | `nga_warnings.py` | ✅ |
+| Applied to GDELT | `gdelt_fetcher.py` | Not yet wrapped |
+
+---
+
+### 5.2 Backend Service Structure ✅ COMPLETE
 
 ```
 backend/
 ├── agents/
-│   ├── acled_fetcher.py      # NEW
-│   ├── ucdp_fetcher.py       # NEW
-│   ├── gdelt_fetcher.py     # NEW
-│   ├── nga_warnings.py      # NEW
-│   └── ...existing...
+│   ├── alpha_harvester.py      ✅
+│   ├── bravo_adsb.py           ✅
+│   ├── bravo_firms.py          ✅
+│   ├── bravo_marine.py         ✅ (keyless AIS not yet implemented)
+│   ├── bravo_news.py           ✅ 170+ feeds from JSON
+│   ├── bravo_sentinel.py       ✅
+│   ├── bravo_websdr.py         ✅ (stub)
+│   ├── gdelt_fetcher.py        ✅
+│   ├── acled_fetcher.py        ✅ CHARLIE-A
+│   ├── ucdp_fetcher.py         ✅ CHARLIE-B
+│   └── nga_warnings.py         ✅ CHARLIE-C
 ├── services/
-│   ├── conflict_service.py   # NEW - unified conflict data
-│   ├── gdelt_client.py      # NEW
-│   └── ...existing...
+│   └── conflict_service.py     ✅
 ├── utils/
-│   └── circuit_breaker.py   # NEW
+│   └── circuit_breaker.py      ✅
 └── data/
-    ├── rss_feeds.json        # NEW - 170+ feeds
-    ├── military_bases.json   # ENHANCE - 220+ bases
-    ├── cables.json           # NEW
-    ├── pipelines.json        # NEW
-    └── ports.json            # NEW
+    ├── rss_feeds.json           ✅ 170+ feeds
+    ├── cables.geojson           ✅
+    ├── pipelines.geojson        ✅
+    ├── ports.geojson            ✅
+    ├── military_bases.geojson   ✅ 63 bases
+    └── nuclear_sites.geojson    ✅ 15 facilities
 ```
 
 ---
 
-## Summary: Files to Create/Modify
+## What Remains (Prioritised)
 
-### New Backend Files (~12 files)
+### High value / low effort
+1. **Wire `clustering.js` into `DeckGLMap.jsx`** — utility exists, just needs integration
+2. **Wire `regions.js` into `App.jsx`** — region-jump selector UI (dropdown or button strip)
+3. **Wrap GDELT in circuit breaker** — currently unprotected external call
+4. **Add `nuclear_sites` layer to `mapLayers.js` + `DeckGLMap.jsx`** — data exists, not rendered yet
 
-- `backend/agents/acled_fetcher.py`
-- `backend/agents/ucdp_fetcher.py`
-- `backend/agents/gdelt_fetcher.py`
-- `backend/agents/nga_warnings.py`
-- `backend/services/conflict_service.py`
-- `backend/services/gdelt_client.py`
-- `backend/utils/circuit_breaker.py`
-- `backend/data/rss_feeds.json`
-- `backend/data/cables.json`
-- `backend/data/pipelines.json`
-- `backend/data/ports.json`
+### Medium value / medium effort
+5. **`ConflictPanel.jsx`** — tabbed sidebar with ACLED/UCDP/NGA filters
+6. **`MapLegend.jsx` wired into `App.jsx`** — component exists but may not be imported yet
+7. **AISHub free AIS** — replace MarineTraffic dependency
 
-### New Frontend Files (~20 files)
-
-- `src/components/DeckGLMap.tsx`
-- `src/components/GlobeMap.tsx`
-- `src/components/MapPopup.tsx`
-- `src/components/ConflictPanel.tsx`
-- `src/components/MilitaryPanel.tsx`
-- `src/components/NewsPanel.tsx`
-- `src/components/UnrestPanel.tsx`
-- `src/components/MapLegend.tsx`
-- `src/services/acled.ts`
-- `src/services/ucdp.ts`
-- `src/services/military-bases.ts`
-- `src/services/cables.ts`
-- `src/services/pipelines.ts`
-- `src/services/ports.ts`
-- `src/services/nuclear.ts`
-- `src/config/mapLayers.ts`
-- `src/config/regions.ts`
-- `src/utils/clustering.ts`
-
-### Modified Files (~8 files)
-
-- `backend/config.py` — Add new env vars
-- `backend/main.py` — Add new endpoints
-- `backend/models/event.py` — Add new event types
-- `frontend/package.json` — Add dependencies
-- `frontend/src/App.tsx` — Integrate new components
-- `frontend/src/components/MapContainer.jsx` — Could replace or keep Cesium
-- `frontend/src/styles/globe.css` — Add new map styles
+### Low value / high effort
+8. **Globe.gl 3D view** — nice to have, not operationally necessary
+9. **Day/night terminator overlay** — useful context but cosmetic
+10. **Additional panel components** (MilitaryPanel, NewsPanel, UnrestPanel)
 
 ---
 
-## Estimated Effort
+## What's NOT in Scope
 
-| Phase | Complexity | Time Estimate |
-|-------|------------|---------------|
-| Phase 1: Data Sources | High | 2-3 weeks |
-| Phase 2: Map Visualization | High | 2-3 weeks |
-| Phase 3: Data Services | Medium | 1-2 weeks |
-| Phase 4: UI Components | Medium | 1-2 weeks |
-| Phase 5: Architecture | Low | 3-5 days |
-
-**Total: ~6-10 weeks for core functionality**
-
----
-
-## What's NOT Included (Production Features)
-
-- Desktop app (Tauri)
+- Desktop app (Tauri / Electron)
 - PWA with offline support
 - Full i18n localization system (21 languages)
-- Localization lazy-loading
-- Proto-first API contracts
-- Vercel deployment configs
-- Desktop-optimized GPU settings
+- Proto-first API contracts (gRPC/protobuf)
+- Vercel / cloud deployment configs
+- GPU-optimized rendering settings
 - PWA service worker
+
+---
+
+*Project ARES — Feature Plan v3.0 — 2026-03-04*
+*Phase 1 (data sources): complete | Phase 2 (map): mostly complete | Phase 5 (architecture): complete*
