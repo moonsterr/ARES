@@ -63,6 +63,7 @@ class Settings(BaseSettings):
     ENABLE_SENTINEL: bool = Field(default=True)
     ENABLE_WEBSDR: bool = Field(default=False)
     ENABLE_MARINE: bool = Field(default=False)
+    ENABLE_NEWS: bool = Field(default=True)
 
     # ── Geocoding ─────────────────────────────────────────────────────
     NOMINATIM_USER_AGENT: str = Field(default="ARES-OSINT-Dashboard/1.0")

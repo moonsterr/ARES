@@ -3,6 +3,11 @@
 .event-log {
   display: flex;
   flex-direction: column;
+  /* Fill the flex parent (.ares-sidebar) exactly — min-height:0 is
+     required so the child can shrink below its content size and let
+     the inner list scroll instead of overflowing the viewport. */
+  flex: 1;
+  min-height: 0;
   height: 100%;
 }
 
@@ -53,6 +58,7 @@
 
 .event-log__list {
   flex: 1;
+  min-height: 0;          /* critical: allows flex child to shrink and scroll */
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px;

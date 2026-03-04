@@ -17,6 +17,7 @@ from .agents.bravo_firms import poll_firms
 from .agents.bravo_websdr import run_websdr_monitor
 from .agents.bravo_marine import poll_marine
 from .agents.bravo_sentinel import run_sentinel_worker
+from .agents.bravo_news import run_news_harvester
 from .config import settings
 
 logging.basicConfig(
@@ -52,6 +53,9 @@ async def lifespan(app: FastAPI):
 
     if settings.ENABLE_MARINE:
         tasks.append(asyncio.create_task(poll_marine(), name="bravo_marine"))
+
+    if settings.ENABLE_NEWS:
+        tasks.append(asyncio.create_task(run_news_harvester(), name="bravo_news"))
 
     logger.info(f"[ARES] {len(tasks)} agent tasks launched")
     yield
@@ -119,6 +123,7 @@ async def health():
             "bravo_sentinel":  settings.ENABLE_SENTINEL,
             "bravo_websdr":    settings.ENABLE_WEBSDR,
             "bravo_marine":    settings.ENABLE_MARINE,
+            "bravo_news":      settings.ENABLE_NEWS,
         },
         "ws_clients": manager.connection_count,
     }
@@ -157,5 +162,10 @@ async def agent_status():
             "enabled":     settings.ENABLE_MARINE,
             "configured":  bool(settings.MARINETRAFFIC_API_KEY),
             "description": "MarineTraffic AIS naval vessel tracker",
+        },
+        "bravo_news": {
+            "enabled":     settings.ENABLE_NEWS,
+            "configured":  True,  # no API key required
+            "description": "RSS tactical news harvester (Al Jazeera, JPost, MEE)",
         },
     }

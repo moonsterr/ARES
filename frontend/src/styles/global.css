@@ -75,27 +75,16 @@ body {
   overflow: hidden;
 }
 
-/* Glassmorphism sidebar */
+/* Glassmorphism sidebar — overflow is handled by the inner list */
 .ares-sidebar {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border-left: var(--glass-border);
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-}
-
-.ares-sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-.ares-sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.ares-sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 /* Status bar */
