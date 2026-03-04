@@ -158,6 +158,52 @@ async def resolve_location(
     return None
 
 
+async def resolve_location_from_ollama_name(
+    ollama_location_name: str,
+    threshold: int = 70,
+) -> Optional[tuple[float, float, str, float]]:
+    """
+    Resolve a location name extracted by Ollama NER when the RSS feed carries
+    no explicit geo-tags.  Strategy:
+
+      1. Try local military DB fuzzy match at a slightly relaxed threshold
+         (default 70 vs normal 78) because Ollama may not return the exact
+         canonical spelling (e.g. "T4 Airbase" vs "Tiyas Air Base / T-4").
+      2. If local match found → return immediately with high confidence.
+      3. If no local match → fall back to Nominatim bounded to Middle East.
+
+    Returns (lat, lon, canonical_name, confidence) or None.
+    """
+    if not ollama_location_name:
+        return None
+
+    from ..config import settings as _settings
+    eff_threshold = min(threshold, _settings.GEOCODE_FUZZY_THRESHOLD)
+
+    # Stage 1: local military base DB (fast, <10 ms)
+    local_result = lookup_local(ollama_location_name, threshold=eff_threshold)
+    if local_result:
+        lat, lon, name, score = local_result
+        logger.debug(
+            f"[Geocoder] Ollama-name local hit: '{ollama_location_name}' "
+            f"→ {name} (score={score:.2f}) @ {lat},{lon}"
+        )
+        return lat, lon, name, score
+
+    # Stage 2: Nominatim fallback
+    nominatim_result = await lookup_nominatim(ollama_location_name)
+    if nominatim_result:
+        lat, lon, display_name = nominatim_result
+        logger.debug(
+            f"[Geocoder] Ollama-name Nominatim: '{ollama_location_name}' "
+            f"→ {display_name} @ {lat},{lon}"
+        )
+        return lat, lon, display_name, 0.55  # Nominatim confidence is moderate
+
+    logger.debug(f"[Geocoder] Ollama-name unresolved: '{ollama_location_name}'")
+    return None
+
+
 def reload_db():
     """Reload the military base database from disk (for hot-updates)."""
     _load_db()

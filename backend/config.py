@@ -56,8 +56,23 @@ class Settings(BaseSettings):
         default=["http://localhost:5173", "http://localhost:3000"]
     )
 
+    # ── RSS News Harvester ────────────────────────────────────────────
+    RSS_FEEDS: list[str] = Field(
+        default=[
+            "https://www.aljazeera.com/xml/rss/all.xml",
+            "https://www.jpost.com/rss/rssfeedsheadlines.aspx",
+            "https://www.middleeasteye.net/rss",
+        ],
+        description="List of RSS feed URLs to poll for conflict intelligence"
+    )
+    RSS_POLL_INTERVAL: int = Field(
+        default=300,
+        description="Seconds between RSS poll cycles (default 5 minutes)"
+    )
+
     # ── Agent feature flags ───────────────────────────────────────────
-    ENABLE_TELEGRAM: bool = Field(default=True)
+    ENABLE_TELEGRAM: bool = Field(default=False)
+    ENABLE_RSS: bool = Field(default=True)
     ENABLE_ADSB: bool = Field(default=True)
     ENABLE_FIRMS: bool = Field(default=True)
     ENABLE_SENTINEL: bool = Field(default=True)

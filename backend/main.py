@@ -14,6 +14,7 @@ from .websocket_manager import manager
 from .agents.alpha_harvester import run_harvester
 from .agents.bravo_adsb import poll_adsb
 from .agents.bravo_firms import poll_firms
+from .agents.bravo_news import poll_rss
 from .agents.bravo_websdr import run_websdr_monitor
 from .agents.bravo_marine import poll_marine
 from .agents.bravo_sentinel import run_sentinel_worker
@@ -37,6 +38,9 @@ async def lifespan(app: FastAPI):
 
     if settings.ENABLE_TELEGRAM:
         tasks.append(asyncio.create_task(run_harvester(), name="alpha_harvester"))
+
+    if settings.ENABLE_RSS:
+        tasks.append(asyncio.create_task(poll_rss(), name="bravo_news"))
 
     if settings.ENABLE_ADSB:
         tasks.append(asyncio.create_task(poll_adsb(), name="bravo_adsb"))
@@ -114,6 +118,7 @@ async def health():
         "version": "1.0.0",
         "agents": {
             "alpha_telegram":  settings.ENABLE_TELEGRAM,
+            "bravo_news":      settings.ENABLE_RSS,
             "bravo_adsb":      settings.ENABLE_ADSB,
             "bravo_firms":     settings.ENABLE_FIRMS,
             "bravo_sentinel":  settings.ENABLE_SENTINEL,
@@ -133,10 +138,18 @@ async def agent_status():
             "configured":  bool(settings.TELEGRAM_API_ID and settings.TELEGRAM_API_HASH),
             "description": "Telegram channel monitor (15+ OSINT channels)",
         },
+        "bravo_news": {
+            "enabled":     settings.ENABLE_RSS,
+            "configured":  bool(settings.RSS_FEEDS),
+            "feed_count":  len(settings.RSS_FEEDS),
+            "poll_interval_s": settings.RSS_POLL_INTERVAL,
+            "description": "RSS news harvester — Al Jazeera, JPost, MEE (Ollama NER)",
+        },
         "bravo_adsb": {
             "enabled":     settings.ENABLE_ADSB,
-            "configured":  bool(settings.ADSB_RAPIDAPI_KEY),
-            "description": "ADS-B Exchange military aircraft tracker",
+            # ADSB.lol v2 is keyless — always configured when enabled
+            "configured":  True,
+            "description": "ADSB.lol v2 military aircraft tracker (no API key required)",
         },
         "bravo_firms": {
             "enabled":     settings.ENABLE_FIRMS,

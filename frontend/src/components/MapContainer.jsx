@@ -1,14 +1,25 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   Viewer, Ion, Terrain, Cartesian3, Cartesian2,
   Color, HeightReference, VerticalOrigin, LabelStyle,
   DistanceDisplayCondition, ConstantPositionProperty,
   ConstantProperty, Entity, NearFarScalar,
-  ScreenSpaceEventType
+  ScreenSpaceEventType, CallbackProperty, JulianDate
 } from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 import '../styles/globe.css'
 import { EVENT_COLORS } from '../lib/cesiumColors'
+
+// ── High-confidence pulse animation ──────────────────────────────────
+// Creates a CallbackProperty that oscillates pixelSize between base and max
+// using a sine wave tied to the real-time clock. Used for RSS + FIRMS verified events.
+function makePulseSize(baseSize, maxSize, periodMs = 1800) {
+  return new CallbackProperty(() => {
+    const t = (Date.now() % periodMs) / periodMs          // 0 → 1
+    const factor = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI) // 0 → 1 sine
+    return baseSize + (maxSize - baseSize) * factor
+  }, false)
+}
 
 Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION_TOKEN || 'your_cesium_ion_token_here'
 
@@ -100,7 +111,21 @@ function upsertEntity(viewer, entityMap, event) {
   // Use explicit null/undefined check — 0 is a valid coordinate
   if (event.lon == null || event.lat == null) return
   const id = `event-${event.id}`
-  const color = Color.fromCssColorString(EVENT_COLORS[event.category] ?? '#ff4444')
+
+  // ── Pin sizing & colour logic ─────────────────────────────────────
+  // High-confidence: RSS + FIRMS verified (high_confidence flag OR verified=true + confidence≥0.75)
+  const isHighConf = event.high_confidence === true ||
+    (event.verified === true && (event.confidence ?? 0) >= 0.75)
+
+  // Verified events get the 'verified' green colour override
+  const colorKey = event.verified ? 'verified' : (event.category ?? 'unknown')
+  const color = Color.fromCssColorString(EVENT_COLORS[colorKey] ?? '#ff4444')
+
+  // RSS-sourced events get a white outline to distinguish them from Telegram pins
+  const isRSS = typeof event.source === 'string' && event.source.startsWith('rss:')
+  const outlineColor = isRSS ? Color.WHITE.withAlpha(0.8) : color.withAlpha(0.4)
+  const outlineWidth = isRSS ? 2 : 6
+
   const existing = entityMap.get(id)
 
   if (existing) {
@@ -108,10 +133,18 @@ function upsertEntity(viewer, entityMap, event) {
       Cartesian3.fromDegrees(event.lon, event.lat, 0)
     )
     if (existing.point) {
-      existing.point.color = new ConstantProperty(color)
+      existing.point.color        = new ConstantProperty(color)
+      existing.point.outlineColor = new ConstantProperty(outlineColor)
+      // If this event was just promoted to high-confidence, start pulsing
+      if (isHighConf && !(existing.point.pixelSize instanceof CallbackProperty)) {
+        existing.point.pixelSize = makePulseSize(14, 26)
+      }
     }
     return
   }
+
+  // Base pin size: larger for high-confidence, normal otherwise
+  const basePixelSize = isHighConf ? makePulseSize(14, 26) : 10
 
   const entity = viewer.entities.add({
     id,
@@ -120,27 +153,25 @@ function upsertEntity(viewer, entityMap, event) {
 
     // ─ Point icon — visible at ALL zoom levels, grows when zoomed in
     point: {
-      pixelSize:       10,
+      pixelSize:       basePixelSize,
       color:           color,
-      outlineColor:    color.withAlpha(0.4),
-      outlineWidth:    6,
+      outlineColor:    outlineColor,
+      outlineWidth:    outlineWidth,
       heightReference: HeightReference.CLAMP_TO_GROUND,
       // Scale UP as you zoom in (near=1km→2x, far=10000km→0.5x)
       scaleByDistance: new NearFarScalar(1e3, 2.0, 1e7, 0.5),
-      // No distanceDisplayCondition — always visible
     },
 
-    // ─ Label: fade IN as you zoom closer, fully visible under 300km altitude
+    // ─ Label: fade IN as you zoom closer, fully visible under 2000km altitude
     label: {
-      text:            `[${event.category?.toUpperCase()}] ${event.location_name ?? ''}`,
-      font:            '11px "Courier New", monospace',
+      text:            `[${event.category?.toUpperCase()}]${isRSS ? ' 📡' : ''} ${event.location_name ?? ''}`,
+      font:            `${isHighConf ? 12 : 11}px "Courier New", monospace`,
       style:           LabelStyle.FILL_AND_OUTLINE,
       fillColor:       color,
       outlineColor:    Color.BLACK,
-      outlineWidth:    2,
+      outlineWidth:    isHighConf ? 3 : 2,
       verticalOrigin:  VerticalOrigin.BOTTOM,
       pixelOffset:     new Cartesian2(0, -16),
-      // Visible from ground up to 2000km; fades out beyond 1500km
       distanceDisplayCondition: new DistanceDisplayCondition(0, 2_000_000),
       translucencyByDistance:   new NearFarScalar(1_500_000, 1.0, 2_000_000, 0.0),
     },

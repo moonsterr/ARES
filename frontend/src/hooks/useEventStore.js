@@ -53,6 +53,32 @@ export function useEventStore() {
       return
     }
 
+    // ── Fusion update: refresh DST fields on existing event ──
+    if (incoming.type === 'fusion_update') {
+      setEvents(prev => prev.map(e =>
+        e.id === incoming.event_id
+          ? {
+              ...e,
+              fusion_status: incoming.fusion_status,
+              conflict_k:    incoming.conflict_k,
+              bel:           incoming.bel,
+              pl:            incoming.pl,
+            }
+          : e
+      ))
+      return
+    }
+
+    // ── Satellite imagery: attach quicklook URL to existing event ──
+    if (incoming.type === 'satellite_imagery') {
+      setEvents(prev => prev.map(e =>
+        e.id === incoming.event_id
+          ? { ...e, satellite_quicklook: incoming.quicklook_url }
+          : e
+      ))
+      return
+    }
+
     // ── Ping / unknown system messages: ignore ──
     if (!incoming.category) return
 
