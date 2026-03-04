@@ -28,7 +28,19 @@ class ConnectionManager:
         logger.info(f"[WS] Client disconnected — total: {len(self._connections)}")
 
     async def broadcast_json(self, data: dict):
-        """Send a JSON payload to all connected clients."""
+        """
+        Send a JSON payload to all connected clients.
+
+        Expected payload shapes:
+          • Conflict event (Telegram / RSS):  has 'category' (str), 'id', 'lat', 'lon'
+          • ADS-B sweep:                       type='adsb_sweep', 'aircraft' list
+          • FIRMS fusion verification:         type='fusion_verified', 'event_id'
+          • Sentinel-2 imagery:                type='satellite_imagery', 'event_id'
+          • AIS sweep:                         type='ais_sweep', 'regions'
+          • Fusion update:                     type='fusion_update', 'event_id'
+
+        The 'default=str' serialiser handles datetime objects and Enums.
+        """
         if not self._connections:
             return
         message = json.dumps(data, default=str)

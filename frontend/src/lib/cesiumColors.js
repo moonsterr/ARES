@@ -5,28 +5,30 @@
  */
 
 export const EVENT_COLORS = {
-  air_alert:       '#ef4444',   // Red — hostile air
-  ground_strike:   '#f97316',   // Orange — kinetic ground
-  troop_movement:  '#3b82f6',   // Blue — friendly/movement
-  naval_event:     '#06b6d4',   // Cyan — maritime
-  explosion:       '#eab308',   // Amber — unverified blast
-  casualty_report: '#e879f9',   // Pink — casualty data
-  verified:        '#22c55e',   // Green — cross-verified
-  conflict:        '#a855f7',   // Purple — conflicting reports
-  aircraft:        '#38bdf8',   // Sky blue — ADS-B military aircraft
-  unknown:         '#94a3b8',   // Slate — unknown
+  air_alert:        '#ef4444',   // Red — hostile air
+  ground_strike:    '#f97316',   // Orange — kinetic ground
+  troop_movement:   '#3b82f6',   // Blue — friendly/movement
+  naval_event:      '#06b6d4',   // Cyan — maritime
+  explosion:        '#eab308',   // Amber — unverified blast
+  casualty_report:  '#e879f9',   // Pink — casualty data
+  verified:         '#22c55e',   // Green — cross-verified (RSS + FIRMS)
+  conflict:         '#a855f7',   // Purple — conflicting reports (high DST-K)
+  aircraft:         '#38bdf8',   // Sky blue — ADS-B military aircraft
+  unknown:          '#94a3b8',   // Slate — unknown / unclassified
+  high_confidence:  '#facc15',   // Gold — RSS + FIRMS fused, high confidence pulse
 }
 
 export const EVENT_GLOW_COLORS = {
-  air_alert:       'rgba(239, 68, 68, 0.6)',
-  ground_strike:   'rgba(249, 115, 22, 0.6)',
-  troop_movement:  'rgba(59, 130, 246, 0.6)',
-  naval_event:     'rgba(6, 182, 212, 0.6)',
-  explosion:       'rgba(234, 179, 8, 0.6)',
-  casualty_report: 'rgba(232, 121, 249, 0.6)',
-  verified:        'rgba(34, 197, 94, 0.6)',
-  conflict:        'rgba(168, 85, 247, 0.6)',
-  unknown:         'rgba(148, 163, 184, 0.4)',
+  air_alert:        'rgba(239, 68, 68, 0.6)',
+  ground_strike:    'rgba(249, 115, 22, 0.6)',
+  troop_movement:   'rgba(59, 130, 246, 0.6)',
+  naval_event:      'rgba(6, 182, 212, 0.6)',
+  explosion:        'rgba(234, 179, 8, 0.6)',
+  casualty_report:  'rgba(232, 121, 249, 0.6)',
+  verified:         'rgba(34, 197, 94, 0.6)',
+  conflict:         'rgba(168, 85, 247, 0.6)',
+  unknown:          'rgba(148, 163, 184, 0.4)',
+  high_confidence:  'rgba(250, 204, 21, 0.7)',  // Gold pulse glow
 }
 
 export const CATEGORY_CSS_VARS = {
