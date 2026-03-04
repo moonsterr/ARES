@@ -36,63 +36,26 @@ Open `.env` in your editor. You will fill in each section as you complete the st
 
 ---
 
-## Step 2 — Cesium Ion Token (Required — Free)
+## Step 2 — Database
 
-The 3D globe requires a Cesium Ion token for World Terrain and high-resolution imagery.
+Start PostgreSQL with Docker:
 
-1. Go to https://ion.cesium.com/signup and create a free account
-2. Log in → click **Access Tokens** in the left sidebar
-3. Click **Create token** → give it a name (e.g. "ARES") → use default scopes → **Create**
-4. Copy the token string (starts with `eyJ...`)
-
-Add to `.env`:
-```
-VITE_CESIUM_ION_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```bash
+cd ares/
+docker compose up -d postgres
 ```
 
-**Without this token**: The globe will load but without terrain or basemap — you will see a blank sphere. The rest of the system still functions.
+Wait for the health check to pass (~10 seconds):
+```bash
+docker compose ps
+# postgres should show: (healthy)
+```
+
+The PostGIS schema (tables, spatial indexes) is created automatically on first connection by the backend.
 
 ---
 
-## Step 3 — Telegram API Credentials (Required for Agent ALPHA)
-
-Agent ALPHA monitors 16 Telegram channels. Without this, you get no text intelligence feed — only ADS-B and sensor data.
-
-1. Go to https://my.telegram.org — log in with your phone number
-2. Click **API Development Tools**
-3. Fill in the form:
-   - App title: `ARES`
-   - Short name: `ares_osint`
-   - Platform: `Desktop`
-   - URL: `http://localhost`
-4. Click **Create application**
-5. Note your `App api_id` (integer, e.g. `12345678`) and `App api_hash` (32-char hex)
-
-Add to `.env`:
-```
-TELEGRAM_API_ID=12345678
-TELEGRAM_API_HASH=abcdef1234567890abcdef1234567890
-TELEGRAM_PHONE=+12025551234
-```
-
-**Join the channels**: Telethon can only monitor channels your Telegram account has joined. Open your Telegram app and join each of these channels manually:
-
-```
-@idf_updates_english     @israeldefenseforces    @kann_news_eng
-@sabereen_news           @palinfo                @intelsky
-@militarymaps1           @rybar_english          @middle_east_spectator
-@lebanese_breaking_news  @aljumhuriya_lb         @iran_briefing
-@irna_fa                 @ansarallaheng          @wartranslated
-@osint_collective
-```
-
-**First run authentication**: On the very first startup, Telethon will prompt you to enter a verification code sent to your phone. This is normal. After verification, a `.session` file is created and subsequent starts are automatic.
-
-**Legal note**: Only monitor public channels or channels you are authorized to access.
-
----
-
-## Step 4 — Ollama Local LLM (Required for translation + NER)
+## Step 3 — Ollama Local LLM (Required for translation + NER)
 
 Ollama runs the llama3.1:8b model locally for Hebrew/Arabic/Persian translation and entity extraction.
 
@@ -125,7 +88,7 @@ OLLAMA_MODEL=llama3.1:8b
 
 ---
 
-## Step 5 — NASA FIRMS API Key (Required for fusion validation)
+## Step 4 — NASA FIRMS API Key (Required for fusion validation)
 
 FIRMS provides the thermal satellite data that promotes Telegram strike reports to VERIFIED status.
 
@@ -142,7 +105,7 @@ FIRMS_MAP_KEY=your_32_character_key_here
 
 ---
 
-## Step 6 — ADSB.lol (No key required — free community API)
+## Step 5 — ADSB.lol (No key required — free community API)
 
 Tracks military aircraft in the Middle East in real time using the free ADSB.lol v2 API.
 No account, no API key, and no payment are required.
@@ -162,45 +125,26 @@ ADSB_LOL_BASE_URL=https://api.adsb.lol/v2
 
 ---
 
-## Step 7 — Copernicus Data Space (Optional — for satellite imagery)
+## Step 6 — GDELT (No key required — free news API)
 
-Provides post-strike Sentinel-2 satellite imagery when events are verified.
+GDELT provides global news articles that are processed to extract conflict-related events.
+No API key required — uses the free GDELT v2 Doc API.
 
-1. Go to https://dataspace.copernicus.eu/ and register for a free account
-2. Verify your email
-3. Log in → go to **User Settings** (top right) → **OAuth Clients**
-4. Click **Create Client** → note the `client_id` and `client_secret`
+Agent BRAVO-G polls every 15 minutes:
+- Queries for conflict-related keywords (military, strike, attack, war, etc.)
+- Uses LLM to extract locations and categorize events
+- Creates conflict events from news headlines
 
-Add to `.env`:
+Default config in `.env`:
 ```
-COPERNICUS_USERNAME=your@email.com
-COPERNICUS_PASSWORD=yourpassword
-COPERNICUS_CLIENT_ID=cdse-public
+GDELT_BASE_URL=https://api.gdeltproject.org/api/v2/doc/doc
+GDELT_POLL_INTERVAL=900
+ENABLE_GDELT=true
 ```
-
-If you skip this, verified events will not have satellite imagery attached — everything else works normally.
 
 ---
 
-## Step 8 — MarineTraffic AIS (Optional — paid)
-
-For naval vessel tracking in the Red Sea, Persian Gulf, and Mediterranean.
-
-**Reality**: There is no free tier. Options:
-- **Kpler/MarineTraffic commercial**: Contact https://www.kpler.com/maritime — request a developer trial
-- **AISHub free alternative**: Register at https://www.aishub.net (requires you to share AIS data from your own receiver or use their research tier)
-
-Add to `.env` if you have a key:
-```
-MARINETRAFFIC_API_KEY=your_token_here
-ENABLE_MARINE=true
-```
-
-Leave `MARINETRAFFIC_API_KEY` blank and `ENABLE_MARINE=false` to skip — the agent sleeps silently.
-
----
-
-## Step 9 — fasttext Language Detection Model
+## Step 7 — fasttext Language Detection Model (Optional)
 
 This 131MB binary enables fast language detection before routing messages to Ollama.
 
@@ -215,37 +159,7 @@ wget -O ares/backend/data/models/lid.176.bin \
 
 ---
 
-## Step 10 — Build the Military Base Database (Optional — improves geocoding)
-
-The repository includes 63 manually-curated military sites. To expand with GeoNames data (~200+ sites):
-
-```bash
-cd ares/backend/data/
-python3 build_military_db.py
-```
-
-This downloads GeoNames military feature data for 16 Middle East countries and merges it with the curated entries. Takes about 2 minutes. Skip this if you want to start immediately — the 63 curated sites cover all major bases.
-
----
-
-## Step 11 — Start the Database
-
-```bash
-cd ares/
-docker compose up -d postgres
-```
-
-Wait for the health check to pass (~10 seconds):
-```bash
-docker compose ps
-# postgres should show: (healthy)
-```
-
-The PostGIS schema (tables, spatial indexes) is created automatically on first connection by the backend.
-
----
-
-## Step 12 — Install Backend Dependencies
+## Step 8 — Install Backend Dependencies
 
 ```bash
 cd ares/backend/
@@ -262,7 +176,7 @@ pip install -r requirements.txt
 
 ---
 
-## Step 13 — Install Frontend Dependencies
+## Step 9 — Install Frontend Dependencies
 
 ```bash
 cd ares/frontend/
@@ -271,7 +185,7 @@ npm install
 
 ---
 
-## Step 14 — Start the Backend
+## Step 10 — Start the Backend
 
 ```bash
 cd ares/backend/
@@ -281,24 +195,18 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 On first start you will see:
 ```
 [ARES] Database initialized
-[ARES] 4 agent tasks launched
+[ARES] 5 agent tasks launched
 [Geocoder] Loaded 63 military sites, 312 name variants
 [LLM] fasttext model loaded
-[ALPHA] Harvester active — watching 16 channels
 [BRAVO-A] ADSB.lol: polling every 10s
 [BRAVO-B] FIRMS: polling every 5 minutes
+[BRAVO-G] GDELT: polling every 15 minutes
+[BRAVO-N] RSS: polling every 5 minutes
 ```
-
-**Telegram first-run only**: If this is the first time running with Telegram credentials, the terminal will prompt:
-```
-Please enter your phone (or bot token): +12025551234
-Please enter the code you received: 12345
-```
-Enter the code sent to your Telegram app. This only happens once. The `ares_session` file is created and reused on all subsequent starts.
 
 ---
 
-## Step 15 — Start the Frontend
+## Step 11 — Start the Frontend
 
 Open a new terminal:
 
@@ -310,10 +218,50 @@ npm run dev
 Open your browser at: **http://localhost:5173**
 
 You should see:
-- The CesiumJS 3D globe focused on the Middle East
+- The Deck.gl 2D map focused on the Middle East
 - The status bar showing `WS LIVE` in green
-- `ALPHA` and `BRAVO` agent indicators in the top right
+- Layer toggle button in top-right corner
 - The intelligence feed sidebar on the right (will populate as events arrive)
+
+---
+
+## Optional: Telegram Credentials
+
+If you want to monitor Telegram channels (Agent ALPHA):
+
+1. Go to https://my.telegram.org — log in with your phone number
+2. Click **API Development Tools**
+3. Fill in the form:
+   - App title: `ARES`
+   - Short name: `ares_osint`
+   - Platform: `Desktop`
+   - URL: `http://localhost`
+4. Click **Create application**
+5. Note your `App api_id` and `App api_hash`
+
+Add to `.env`:
+```
+TELEGRAM_API_ID=12345678
+TELEGRAM_API_HASH=abcdef1234567890abcdef1234567890
+TELEGRAM_PHONE=+12025551234
+ENABLE_TELEGRAM=true
+```
+
+**Join the channels**: You must join each channel from your Telegram account before ARES can monitor it.
+
+---
+
+## Optional: Copernicus Sentinel-2
+
+For satellite imagery on verified events:
+
+1. Go to https://dataspace.copernicus.eu/ and register
+2. Add credentials to `.env`:
+```
+COPERNICUS_USERNAME=your@email.com
+COPERNICUS_PASSWORD=yourpassword
+ENABLE_SENTINEL=true
+```
 
 ---
 
@@ -323,17 +271,10 @@ If you prefer to run everything in containers:
 
 ```bash
 cd ares/
-
-# Copy your filled-in .env to the ares root (docker-compose reads it from there)
-# Then start everything:
 docker compose up
-
-# Or detached:
-docker compose up -d
-docker compose logs -f backend   # tail backend logs
 ```
 
-**Note**: Ollama must still run on the host — it is not containerized because it needs GPU access. The backend container connects to `host.docker.internal:11434` — adjust `OLLAMA_BASE_URL` in `.env` accordingly:
+**Note**: Ollama must still run on the host — it is not containerized because it needs GPU access. The backend container connects to `host.docker.internal:11434`:
 
 ```
 OLLAMA_BASE_URL=http://host.docker.internal:11434
@@ -359,7 +300,9 @@ Expected:
   "status": "operational",
   "version": "1.0.0",
   "agents": {
-    "alpha_telegram": true,
+    "alpha_telegram": false,
+    "bravo_news": true,
+    "bravo_gdelt": true,
     "bravo_adsb": true,
     "bravo_firms": true,
     "bravo_sentinel": true,
@@ -370,6 +313,11 @@ Expected:
 }
 ```
 
+### Check infrastructure layers
+```bash
+curl http://localhost:8000/api/infrastructure
+```
+
 ### Check recent events
 ```bash
 curl http://localhost:8000/api/events?limit=10
@@ -377,41 +325,26 @@ curl http://localhost:8000/api/events?limit=10
 
 ### Test WebSocket
 ```bash
-# Install wscat: npm install -g wscat
+npm install -g wscat
 wscat -c ws://localhost:8000/ws/events
-# Events will appear as JSON as they are ingested
-```
-
-### Check database
-```bash
-docker exec -it ares_postgres psql -U ares -d ares_db \
-  -c "SELECT count(*), category FROM events GROUP BY category ORDER BY count DESC;"
 ```
 
 ---
 
 ## Environment Variables Reference
 
-All variables go in `ares/.env`. The backend reads from `backend/.env` if running outside Docker, or from the root `.env` when using Docker Compose.
-
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `VITE_CESIUM_ION_TOKEN` | Yes | — | Cesium Ion access token |
-| `TELEGRAM_API_ID` | Yes* | `0` | Integer from my.telegram.org |
-| `TELEGRAM_API_HASH` | Yes* | `""` | 32-char hex from my.telegram.org |
-| `TELEGRAM_PHONE` | Yes* | `""` | Phone number with country code |
 | `DATABASE_URL` | Yes | `postgresql://ares:ares_secret@localhost:5432/ares_db` | asyncpg connection string |
 | `OLLAMA_BASE_URL` | Yes | `http://localhost:11434` | Ollama API endpoint |
 | `OLLAMA_MODEL` | Yes | `llama3.1:8b` | Model name |
 | `FIRMS_MAP_KEY` | Yes* | `""` | NASA FIRMS API key |
-| `ADSB_LOL_BASE_URL` | No | `https://api.adsb.lol/v2` | ADSB.lol v2 base URL (no key needed) |
-| `COPERNICUS_USERNAME` | No | `""` | Copernicus Data Space email |
-| `COPERNICUS_PASSWORD` | No | `""` | Copernicus Data Space password |
-| `COPERNICUS_CLIENT_ID` | No | `cdse-public` | OAuth client ID |
-| `MARINETRAFFIC_API_KEY` | No | `""` | Leave blank to disable AIS |
-| `BROADCASTIFY_API_KEY` | No | `""` | Leave blank to disable |
-| `VITE_WS_URL` | No | `ws://localhost:8000/ws/events` | WebSocket URL for frontend |
-| `ENABLE_TELEGRAM` | No | `true` | Toggle ALPHA agent |
+| `ADSB_LOL_BASE_URL` | No | `https://api.adsb.lol/v2` | ADSB.lol v2 base URL |
+| `GDELT_BASE_URL` | No | `https://api.gdeltproject.org/api/v2/doc/doc` | GDELT v2 API |
+| `GDELT_POLL_INTERVAL` | No | `900` | Seconds between GDELT polls |
+| `ENABLE_TELEGRAM` | No | `false` | Toggle ALPHA agent |
+| `ENABLE_RSS` | No | `true` | Toggle BRAVO-N RSS agent |
+| `ENABLE_GDELT` | No | `true` | Toggle BRAVO-G GDELT agent |
 | `ENABLE_ADSB` | No | `true` | Toggle BRAVO-A agent |
 | `ENABLE_FIRMS` | No | `true` | Toggle BRAVO-B agent |
 | `ENABLE_SENTINEL` | No | `true` | Toggle BRAVO-C agent |
@@ -425,66 +358,20 @@ All variables go in `ares/.env`. The backend reads from `backend/.env` if runnin
 
 ## Troubleshooting
 
-### Globe shows blank black sphere
-Your Cesium Ion token is missing or invalid. Check `VITE_CESIUM_ION_TOKEN` in `frontend/.env`.
-
-### "Telegram credentials not configured"
-Set `TELEGRAM_API_ID` and `TELEGRAM_API_HASH` in `.env`. Get them from https://my.telegram.org.
+### Map doesn't load
+Make sure you ran `npm install` in the frontend directory to get deck.gl and maplibre-gl dependencies.
 
 ### LLM pipeline is slow / timing out
-Ollama is running on CPU. Normal — ~30s per request. If you have an NVIDIA GPU, ensure CUDA drivers are installed and `ollama ps` shows GPU usage. For CPU-only operation, consider using a smaller model: `ollama pull llama3.2:3b` and set `OLLAMA_MODEL=llama3.2:3b`.
+Ollama is running on CPU. Normal — ~30s per request. If you have an NVIDIA GPU, ensure CUDA drivers are installed and `ollama ps` shows GPU usage.
 
-### Events appear but no coordinates (location undetermined)
-The geocoder could not resolve location names. Either the location was not in the military base DB or Nominatim returned no result (common for obscure neighborhood names). Check `LOG_LEVEL=DEBUG` output for geocoder lines.
-
-### "Cannot access channel — not a member"
-You must join each Telegram channel from your personal Telegram account before ARES can monitor it. Open Telegram, search for the channel username, and click Join.
+### Events appear but no coordinates
+The geocoder could not resolve location names. Check `LOG_LEVEL=DEBUG` output for geocoder lines.
 
 ### Database connection refused
-The PostgreSQL container is not running or not healthy. Run `docker compose up -d postgres` and wait for `(healthy)` status.
+The PostgreSQL container is not running or not healthy. Run `docker compose up -d postgres`.
 
 ### ADS-B shows 0 aircraft
-There may genuinely be no military aircraft in the Middle East bounding box at the moment, or ADSB.lol may be temporarily unreachable. Check the backend logs for `[BRAVO-A]` lines. No API key or rate-limit quota is involved — the API is free and open.
-
-### FloodWait errors in Telegram logs
-Telegram is rate-limiting your account. The harvester automatically sleeps for the required duration (shown in the log). This is normal under high message volume. Reduce the channel count if it persists.
-
----
-
-## Operational Notes
-
-### Updating channel reliability weights
-Edit `ares/backend/data/channel_reliability.json`. The harvester loads this at startup. Restart the backend to apply changes. Long-term: build an empirical calibration loop comparing each channel's reports against FIRMS-verified hotspots.
-
-### Adding new Telegram channels
-1. Join the channel from your Telegram account
-2. Add the username to `WATCHED_CHANNELS` in `backend/agents/alpha_harvester.py`
-3. Add an α weight to `CHANNEL_RELIABILITY` in the same file
-4. Restart the backend
-
-### Expanding the military base database
-Run `python3 ares/backend/data/build_military_db.py` to pull updated GeoNames data. The script merges with existing curated entries without duplicating them.
-
-### Purging old events
-```sql
--- Connect to the database
-docker exec -it ares_postgres psql -U ares -d ares_db
-
--- Delete events older than 30 days
-DELETE FROM events WHERE created_at < NOW() - INTERVAL '30 days';
-DELETE FROM hotspots WHERE detected_at < NOW() - INTERVAL '7 days';
-
--- Reclaim space
-VACUUM ANALYZE;
-```
-
-### Production deployment
-For a production server (not covered in depth here):
-- Run Nginx as a reverse proxy in front of Uvicorn
-- Use `gunicorn -w 1 -k uvicorn.workers.UvicornWorker main:app` (keep 1 worker — agents are not multi-process safe)
-- Store the Telethon `.session` file in a persistent volume
-- Use `systemd` or `supervisor` to manage the backend process
-- Consider Redis for WebSocket broadcasting if you need multi-instance deployment
+There may genuinely be no military aircraft in the Middle East bounding box at the moment. Check the backend logs for `[BRAVO-A]` lines.
 
 ---
 
@@ -497,16 +384,27 @@ ares/
 ├── docker-compose.yml        ← PostgreSQL + backend + frontend containers
 ├── GUIDE.md                  ← this file
 ├── UNIVERSAL.md              ← high-level system overview
+├── technical.md              ← technical documentation
+├── alternatives.md           ← future data source implementation notes
 ├── frontend/
-│   ├── .env                  ← frontend-only env vars (Cesium token, WS URL)
 │   ├── package.json
 │   ├── vite.config.js
 │   └── src/
 │       ├── App.jsx           ← root component
-│       ├── components/       ← MapContainer, EventLog, EventCard, etc.
-│       ├── hooks/            ← useWebSocket, useEventStore, useCesiumEntities
-│       ├── lib/              ← cesiumColors, formatters
-│       └── styles/           ← global.css, globe.css, sidebar.css, cards.css
+│       ├── components/
+│       │   ├── DeckGLMap.jsx     ← NEW: Deck.gl 2D map
+│       │   ├── MapPopup.jsx      ← NEW: click popup
+│       │   ├── MapContainer.jsx  ← legacy (Cesium)
+│       │   ├── EventLog.jsx
+│       │   ├── EventCard.jsx
+│       │   └── StatusBar.jsx
+│       ├── config/
+│       │   └── mapLayers.js     ← NEW: layer definitions
+│       ├── hooks/
+│       │   ├── useWebSocket.js
+│       │   └── useEventStore.js
+│       └── services/
+│           └── infrastructure.js ← NEW
 └── backend/
     ├── main.py               ← FastAPI app entry point
     ├── config.py             ← all settings loaded from .env
@@ -515,11 +413,13 @@ ares/
     ├── requirements.txt      ← pip dependencies
     ├── agents/
     │   ├── alpha_harvester.py   ← Telegram monitor
-    │   ├── bravo_adsb.py        ← ADS-B Exchange
-    │   ├── bravo_firms.py       ← NASA FIRMS + fusion validation
+    │   ├── bravo_adsb.py        ← ADS-B
+    │   ├── bravo_firms.py       ← NASA FIRMS
     │   ├── bravo_sentinel.py    ← Copernicus Sentinel-2
     │   ├── bravo_websdr.py      ← WebSDR HFGCS radio
-    │   └── bravo_marine.py      ← MarineTraffic AIS
+    │   ├── bravo_marine.py      ← MarineTraffic AIS
+    │   ├── bravo_news.py        ← RSS news
+    │   └── gdelt_fetcher.py     ← NEW: GDELT news
     ├── intelligence/
     │   ├── confidence.py        ← Dempster-Shafer PCR5 engine
     │   ├── llm_pipeline.py      ← fasttext + Ollama NLP
@@ -532,13 +432,15 @@ ares/
     │   ├── vessel.py
     │   └── hotspot.py
     └── data/
-        ├── mideast_military_bases.json  ← 63-site geocoding DB
-        ├── channel_reliability.json     ← per-channel α weights
-        ├── build_military_db.py         ← GeoNames expansion script
-        └── models/
-            └── lid.176.bin              ← fasttext model (download separately)
+        ├── cables.geojson           ← NEW: submarine cables
+        ├── pipelines.geojson        ← NEW: oil/gas pipelines
+        ├── ports.geojson            ← NEW: shipping ports
+        ├── military_bases.geojson   ← NEW: military bases
+        ├── mideast_military_bases.json
+        ├── channel_reliability.json
+        └── build_military_db.py
 ```
 
 ---
 
-*Project ARES — Setup Guide v1.1 — 2026-03-03 — Step 6 updated: ADS-B Exchange replaced by ADSB.lol v2 (no API key required)*
+*Project ARES — Setup Guide v2.0 — 2026-03-04 — Updated: CesiumJS replaced by Deck.gl + MapLibre, added GDELT agent*

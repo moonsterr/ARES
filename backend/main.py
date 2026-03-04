@@ -18,7 +18,11 @@ from .agents.bravo_news import poll_rss
 from .agents.bravo_websdr import run_websdr_monitor
 from .agents.bravo_marine import poll_marine
 from .agents.bravo_sentinel import run_sentinel_worker
+from .agents.gdelt_fetcher import poll_gdelt
 from .config import settings
+
+import json
+from pathlib import Path
 
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
@@ -41,6 +45,9 @@ async def lifespan(app: FastAPI):
 
     if settings.ENABLE_RSS:
         tasks.append(asyncio.create_task(poll_rss(), name="bravo_news"))
+
+    if settings.ENABLE_GDELT:
+        tasks.append(asyncio.create_task(poll_gdelt(), name="bravo_gdelt"))
 
     if settings.ENABLE_ADSB:
         tasks.append(asyncio.create_task(poll_adsb(), name="bravo_adsb"))
@@ -170,4 +177,56 @@ async def agent_status():
             "configured":  bool(settings.MARINETRAFFIC_API_KEY),
             "description": "MarineTraffic AIS naval vessel tracker",
         },
+        "bravo_gdelt": {
+            "enabled":     settings.ENABLE_GDELT,
+            "configured":  True,
+            "poll_interval_s": settings.GDELT_POLL_INTERVAL,
+            "description": "GDELT v2 news geo-event extractor",
+        },
     }
+
+
+# ── Infrastructure data endpoints ────────────────────────────────────────
+
+def _load_infrastructure_file(filename: str):
+    """Load a GeoJSON file from backend/data/ directory."""
+    data_dir = Path(__file__).parent / "data"
+    file_path = data_dir / filename
+    if file_path.exists():
+        try:
+            with open(file_path, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.warning(f"[MAIN] Failed to load {filename}: {e}")
+    return None
+
+
+@app.get("/api/infrastructure")
+async def get_infrastructure():
+    """
+    Returns all infrastructure overlay data (cables, pipelines, ports, military bases).
+    GeoJSON format for use with Deck.gl PathLayer and IconLayer.
+    """
+    return {
+        "cables": _load_infrastructure_file("cables.geojson"),
+        "pipelines": _load_infrastructure_file("pipelines.geojson"),
+        "ports": _load_infrastructure_file("ports.geojson"),
+        "military_bases": _load_infrastructure_file("military_bases.geojson"),
+    }
+
+
+@app.get("/api/infrastructure/{layer}")
+async def get_infrastructure_layer(layer: str):
+    """
+    Returns a specific infrastructure layer.
+    Valid layers: cables, pipelines, ports, military_bases
+    """
+    valid_layers = ["cables", "pipelines", "ports", "military_bases"]
+    if layer not in valid_layers:
+        return {"error": f"Invalid layer. Valid: {valid_layers}"}, 404
+    
+    filename = f"{layer}.geojson"
+    data = _load_infrastructure_file(filename)
+    if data is None:
+        return {"error": f"Layer {layer} not found"}, 404
+    return data

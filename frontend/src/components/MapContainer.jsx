@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   Viewer, Ion, Terrain, Cartesian3, Cartesian2,
   Color, HeightReference, VerticalOrigin, LabelStyle,
@@ -9,6 +9,7 @@ import {
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 import '../styles/globe.css'
 import { EVENT_COLORS } from '../lib/cesiumColors'
+import CoordSearch from './CoordSearch'
 
 // ── High-confidence pulse animation ──────────────────────────────────
 // Creates a CallbackProperty that oscillates pixelSize between base and max

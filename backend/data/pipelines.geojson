@@ -1,0 +1,40 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Eilat-Ashkelon Pipeline", "type": "oil", "description": "Oil pipeline from Red Sea to Mediterranean" },
+      "geometry": { "type": "LineString", "coordinates": [[34.9, 29.5], [34.8, 31.0], [34.5, 31.5], [34.2, 31.8]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Kirkuk-Ceyhan Pipeline", "type": "oil", "description": "Oil pipeline from Iraq to Turkey" },
+      "geometry": { "type": "LineString", "coordinates": [[43.5, 34.5], [43.0, 36.0], [42.5, 37.0], [42.0, 37.5], [35.0, 37.0], [32.0, 37.0], [30.0, 36.5]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Saudi East-West Pipeline", "type": "oil", "description": "Oil pipeline across Saudi Arabia" },
+      "geometry": { "type": "LineString", "coordinates": [[50.0, 26.5], [49.0, 25.5], [47.0, 24.5], [45.0, 23.5], [43.0, 22.5], [41.0, 21.5]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gaza Marine Pipeline", "type": "gas", "description": "Offshore gas pipeline" },
+      "geometry": { "type": "LineString", "coordinates": [[34.3, 31.8], [34.2, 31.5], [34.1, 31.3], [34.0, 31.2]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dolphin Pipeline", "type": "gas", "description": "Gas pipeline from Qatar to UAE" },
+      "geometry": { "type": "LineString", "coordinates": [[51.0, 24.5], [52.0, 24.5], [53.0, 24.5], [54.0, 24.5], [55.0, 25.0]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jordanian Pipeline", "type": "oil", "description": "Oil pipeline from Aqaba to Jordan" },
+      "geometry": { "type": "LineString", "coordinates": [[35.0, 29.5], [35.5, 31.0], [35.8, 32.0], [36.0, 32.5]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Iran Gas Pipeline", "type": "gas", "description": "Gas pipeline network in Iran" },
+      "geometry": { "type": "LineString", "coordinates": [[48.0, 30.0], [49.0, 31.0], [50.0, 32.0], [51.0, 33.0], [52.0, 34.0], [53.0, 35.0], [54.0, 36.0]] }
+    }
+  ]
+}

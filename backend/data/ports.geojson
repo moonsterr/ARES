@@ -1,0 +1,150 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Eilat", "country": "Israel", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [34.93, 29.55] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ashkelon", "country": "Israel", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [34.67, 31.67] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Haifa", "country": "Israel", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [35.0, 32.82] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ashdod", "country": "Israel", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [34.65, 31.83] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gaza", "country": "Palestine", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [34.47, 31.53] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jaffa", "country": "Israel", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [34.05, 32.05] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dubai", "country": "UAE", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [55.27, 25.28] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Fujairah", "country": "UAE", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [56.33, 25.13] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Khalifa", "country": "UAE", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [52.6, 24.42] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Muscat", "country": "Oman", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [58.59, 23.61] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Salalah", "country": "Oman", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [54.09, 16.94] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Kuwait", "country": "Kuwait", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [48.0, 29.38] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bahrain", "country": "Bahrain", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [50.58, 26.23] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dammam", "country": "Saudi Arabia", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [50.15, 26.42] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jeddah", "country": "Saudi Arabia", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [39.19, 21.49] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Aqaba", "country": "Jordan", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [34.94, 29.52] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Beirut", "country": "Lebanon", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [35.51, 33.89] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Latakia", "country": "Syria", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [35.75, 35.51] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Tartus", "country": "Syria", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [35.89, 34.93] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Baniyas", "country": "Syria", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [35.68, 35.25] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Khalij", "country": "Iran", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [49.25, 27.5] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bandar Abbas", "country": "Iran", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [56.37, 27.18] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bushehr", "country": "Iran", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [50.87, 28.95] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Khark", "country": "Iran", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [49.47, 29.27] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ras Tanura", "country": "Saudi Arabia", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [50.15, 26.64] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mina Al Ahmadi", "country": "Kuwait", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [48.33, 29.08] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Houphouet", "country": "Yemen", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [42.55, 14.53] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Aden", "country": "Yemen", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [44.99, 12.78] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mokha", "country": "Yemen", "type": "Port" },
+      "geometry": { "type": "Point", "coordinates": [43.25, 13.3] }
+    }
+  ]
+}

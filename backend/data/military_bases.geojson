@@ -1,0 +1,1238 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nevatim Air Base",
+        "country": "IL",
+        "type": "AIRB",
+        "alt_names": [
+          "\u05e0\u05d1\u05d8\u05d9\u05dd",
+          "Nevatim Airbase",
+          "VTM",
+          "Ramon-Negev",
+          "Nevatim AFB",
+          "\u0642\u0627\u0639\u062f\u0629 \u0646\u064a\u0641\u0627\u062a\u064a\u0645"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.012,
+          31.208
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hatzor Air Base",
+        "country": "IL",
+        "type": "AIRB",
+        "alt_names": [
+          "\u05d7\u05e6\u05d5\u05e8",
+          "Hatzor AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.727,
+          31.763
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ramat David Air Base",
+        "country": "IL",
+        "type": "AIRB",
+        "alt_names": [
+          "\u05e8\u05de\u05ea \u05d3\u05d5\u05d3",
+          "Megiddo",
+          "Ramat David AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.18,
+          32.665
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tel Nof Air Base",
+        "country": "IL",
+        "type": "AIRB",
+        "alt_names": [
+          "\u05ea\u05dc \u05e0\u05d5\u05e3",
+          "Tel Nof AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.82,
+          31.839
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hatzerim Air Base",
+        "country": "IL",
+        "type": "AIRB",
+        "alt_names": [
+          "\u05d7\u05e6\u05e8\u05d9\u05dd",
+          "Hatzerim AFB",
+          "Beer Sheva Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.663,
+          31.233
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ovda Air Base",
+        "country": "IL",
+        "type": "AIRB",
+        "alt_names": [
+          "\u05e2\u05d5\u05d1\u05d3\u05d4",
+          "Ramon Airport",
+          "Eilat Ramon"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.936,
+          29.94
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Palmachim Air Base",
+        "country": "IL",
+        "type": "AIRB",
+        "alt_names": [
+          "\u05e4\u05dc\u05de\u05d7\u05d9\u05dd",
+          "Palmachim AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.69,
+          31.896
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Palmyra Airport",
+        "country": "SY",
+        "type": "AIRB",
+        "alt_names": [
+          "Tadmur",
+          "\u062a\u062f\u0645\u0631",
+          "Tadmor Military",
+          "Palmyra Military Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.317,
+          34.557
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mezzeh Military Airport",
+        "country": "SY",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0645\u0632\u0629",
+          "Damascus Military",
+          "Meze Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.223,
+          33.476
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tiyas Military Airbase",
+        "country": "SY",
+        "type": "AIRB",
+        "alt_names": [
+          "\u062a\u064a\u0627\u0633",
+          "T-4 Airbase",
+          "T4 Air Base",
+          "Tiyas"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.612,
+          34.522
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Dmeyr Air Base",
+        "country": "SY",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0636\u0645\u064a\u0631",
+          "Dumayr",
+          "Dmeyr Military"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.788,
+          33.789
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hama Air Base",
+        "country": "SY",
+        "type": "AIRB",
+        "alt_names": [
+          "\u062d\u0645\u0627\u0629",
+          "Hama Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.711,
+          35.118
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Khalkhalah Air Base",
+        "country": "SY",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0627\u0644\u062e\u0644\u062e\u0644\u0629",
+          "Khalkhala"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.555,
+          32.975
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bassel Al-Assad Airport",
+        "country": "SY",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0645\u0637\u0627\u0631 \u0628\u0627\u0633\u0644 \u0627\u0644\u0623\u0633\u062f",
+          "Latakia Airport",
+          "Hmemmem Air Base",
+          "Hmeimim"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.948,
+          35.401
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Deir ez-Zor Airport",
+        "country": "SY",
+        "type": "AIRB",
+        "alt_names": [
+          "\u062f\u064a\u0631 \u0627\u0644\u0632\u0648\u0631",
+          "Dier Ezzor"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40.176,
+          35.285
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Prince Sultan Air Base",
+        "country": "SA",
+        "type": "AIRB",
+        "alt_names": [
+          "Al Kharj",
+          "PSAB",
+          "Prince Sultan AFB",
+          "Al-Kharj Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.626,
+          28.365
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Dhahran Air Base",
+        "country": "SA",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0627\u0644\u0638\u0647\u0631\u0627\u0646",
+          "King Abdulaziz Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50.152,
+          26.265
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Khamis Mushait Air Base",
+        "country": "SA",
+        "type": "AIRB",
+        "alt_names": [
+          "\u062e\u0645\u064a\u0633 \u0645\u0634\u064a\u0637",
+          "Abha Regional Airport",
+          "King Khalid Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.797,
+          18.297
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al Udeid Air Base",
+        "country": "QA",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0627\u0644\u0639\u062f\u064a\u062f",
+          "AUAB",
+          "Al-Udeid AFB",
+          "Al Udeid"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          51.315,
+          25.118
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Incirlik Air Base",
+        "country": "TR",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0130ncirlik",
+          "Adana NATO Base",
+          "Incirlik AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.426,
+          37.002
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diyarbakir Air Base",
+        "country": "TR",
+        "type": "AIRB",
+        "alt_names": [
+          "Diyarbak\u0131r Hava \u00dcss\u00fc"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40.201,
+          37.894
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Imam Ali Base",
+        "country": "IR",
+        "type": "MILB",
+        "alt_names": [
+          "\u067e\u0627\u06cc\u06af\u0627\u0647 \u0627\u0645\u0627\u0645 \u0639\u0644\u06cc",
+          "Zahedan",
+          "Iran-Iraq border base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          61.795,
+          31.233
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mehrabad International Airport",
+        "country": "IR",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0645\u0647\u0631\u0622\u0628\u0627\u062f",
+          "Tehran Mehrabad",
+          "IRGC Tehran"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          51.314,
+          35.689
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Isfahan Air Base",
+        "country": "IR",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0627\u0635\u0641\u0647\u0627\u0646",
+          "Isfahan Airport",
+          "Shahid Beheshti Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          51.861,
+          32.621
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bushehr Air Base",
+        "country": "IR",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0628\u0648\u0634\u0647\u0631",
+          "Bushehr Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50.834,
+          28.945
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bandar Abbas Air Base",
+        "country": "IR",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0628\u0646\u062f\u0631\u0639\u0628\u0627\u0633",
+          "Bandar Abbas Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          56.378,
+          27.218
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vahdati Air Base",
+        "country": "IR",
+        "type": "AIRB",
+        "alt_names": [
+          "\u062f\u0632\u0641\u0648\u0644",
+          "Dezful Air Base",
+          "Vahdati AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.397,
+          32.434
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Shahrokhi Air Base",
+        "country": "IR",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0647\u0645\u062f\u0627\u0646",
+          "Hamadan Air Base",
+          "Shahroki"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.554,
+          34.869
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Balad Air Base",
+        "country": "IQ",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0628\u0644\u062f",
+          "Joint Base Balad",
+          "Al-Bakr Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.361,
+          33.941
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ain al-Asad Air Base",
+        "country": "IQ",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0639\u064a\u0646 \u0627\u0644\u0623\u0633\u062f",
+          "Al Asad Airbase",
+          "Al-Assad"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.441,
+          33.786
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Erbil International Airport",
+        "country": "IQ",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0623\u0631\u0628\u064a\u0644",
+          "Hawler Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.963,
+          36.237
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kirkuk Air Base",
+        "country": "IQ",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0643\u0631\u0643\u0648\u0643",
+          "K1 Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.348,
+          35.467
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Umm Qasr Naval Base",
+        "country": "IQ",
+        "type": "NAVB",
+        "alt_names": [
+          "\u0623\u0645 \u0642\u0635\u0631",
+          "Umm Qasr Port"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47.94,
+          30.033
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Beirut Rafic Hariri Airport",
+        "country": "LB",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0645\u0637\u0627\u0631 \u0628\u064a\u0631\u0648\u062a",
+          "BEY",
+          "Beirut Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.488,
+          33.821
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Haifa Naval Base",
+        "country": "IL",
+        "type": "NAVB",
+        "alt_names": [
+          "\u05d7\u05d9\u05e4\u05d4",
+          "INS Haifa"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.012,
+          32.823
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ashdod Naval Base",
+        "country": "IL",
+        "type": "NAVB",
+        "alt_names": [
+          "\u05d0\u05e9\u05d3\u05d5\u05d3",
+          "INS Ashdod"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.648,
+          31.829
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Eilat Naval Base",
+        "country": "IL",
+        "type": "NAVB",
+        "alt_names": [
+          "\u05d0\u05d9\u05dc\u05ea",
+          "INS Eilat",
+          "Red Sea Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.96,
+          29.544
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tartus Naval Base",
+        "country": "SY",
+        "type": "NAVB",
+        "alt_names": [
+          "\u0637\u0631\u0637\u0648\u0633",
+          "Tartous",
+          "Russian Naval Base Tartus"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.887,
+          34.894
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Banias Port",
+        "country": "SY",
+        "type": "NAVB",
+        "alt_names": [
+          "\u0628\u0627\u0646\u064a\u0627\u0633"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.938,
+          35.173
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Aden-Abyan Airport",
+        "country": "YE",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0639\u062f\u0646",
+          "Aden Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.94,
+          12.829
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sanaa International Airport",
+        "country": "YE",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0635\u0646\u0639\u0627\u0621",
+          "Sana'a Airport"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.219,
+          15.476
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hodeidah Airport",
+        "country": "YE",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0627\u0644\u062d\u062f\u064a\u062f\u0629",
+          "Hodeidah",
+          "Hudaydah"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.976,
+          14.753
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "King Khalid Military City",
+        "country": "SA",
+        "type": "MILB",
+        "alt_names": [
+          "\u0645\u062f\u064a\u0646\u0629 \u0627\u0644\u0645\u0644\u0643 \u062e\u0627\u0644\u062f \u0627\u0644\u0639\u0633\u0643\u0631\u064a\u0629",
+          "KKMC"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.518,
+          27.901
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al Dhafra Air Base",
+        "country": "AE",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0642\u0627\u0639\u062f\u0629 \u0627\u0644\u0638\u0641\u0631\u0629 \u0627\u0644\u062c\u0648\u064a\u0629",
+          "Al Dhafra AFB",
+          "Dhafra"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          54.547,
+          24.248
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Dubai Al Minhad Air Base",
+        "country": "AE",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0642\u0627\u0639\u062f\u0629 \u0627\u0644\u0645\u0646\u0647\u062f",
+          "Minhad"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.366,
+          25.026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Muwaffaq Salti Air Base",
+        "country": "JO",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0642\u0627\u0639\u062f\u0629 \u0627\u0644\u0645\u0641\u0631\u0642",
+          "Azraq Air Base",
+          "Azraq"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.759,
+          32.356
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "King Hussein Air College",
+        "country": "JO",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0627\u0644\u0645\u0644\u0643 \u0627\u0644\u062d\u0633\u064a\u0646 \u0627\u0644\u062c\u0648\u064a\u0629",
+          "Mafraq Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.764,
+          32.363
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Suez Canal Zone",
+        "country": "EG",
+        "type": "MILB",
+        "alt_names": [
+          "\u0642\u0646\u0627\u0629 \u0627\u0644\u0633\u0648\u064a\u0633",
+          "Canal Zone"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.549,
+          30.033
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cairo West Air Base",
+        "country": "EG",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0642\u0627\u0647\u0631\u0629 \u0627\u0644\u063a\u0631\u0628",
+          "Cairo West AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.919,
+          30.116
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Beni Suef Air Base",
+        "country": "EG",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0628\u0646\u064a \u0633\u0648\u064a\u0641",
+          "Beni Suef AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.016,
+          29.208
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ali Al Salem Air Base",
+        "country": "KW",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0642\u0627\u0639\u062f\u0629 \u0639\u0644\u064a \u0627\u0644\u0633\u0627\u0644\u0645",
+          "Ali Al-Salem AFB"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47.521,
+          29.347
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ahmad Al Jaber Air Base",
+        "country": "KW",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0623\u062d\u0645\u062f \u0627\u0644\u062c\u0627\u0628\u0631",
+          "Al Jaber Air Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.039,
+          28.935
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Naval Support Activity Bahrain",
+        "country": "BH",
+        "type": "NAVB",
+        "alt_names": [
+          "NSA Bahrain",
+          "US 5th Fleet HQ",
+          "Juffair Naval Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50.51,
+          26.215
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Isa Air Base",
+        "country": "BH",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0642\u0627\u0639\u062f\u0629 \u0639\u064a\u0633\u0649",
+          "BAF Isa",
+          "Bahrain Air Force Base"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50.596,
+          26.027
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bagram Air Base",
+        "country": "AF",
+        "type": "AIRB",
+        "alt_names": [
+          "\u0628\u06af\u0631\u0627\u0645",
+          "BAF Bagram"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.265,
+          34.946
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Golan Heights",
+        "country": "IL",
+        "type": "MILB",
+        "alt_names": [
+          "\u0631\u05de\u05ea \u05d4\u05d2\u05d5\u05dc\u05df",
+          "\u0647\u0636\u0628\u0629 \u0627\u0644\u062c\u0648\u0644\u0627\u0646",
+          "Ramat HaGolan"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.75,
+          33.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "West Bank",
+        "country": "PS",
+        "type": "MILB",
+        "alt_names": [
+          "\u0627\u0644\u0636\u0641\u0629 \u0627\u0644\u063a\u0631\u0628\u064a\u0629",
+          "Judea and Samaria"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.25,
+          31.9
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Gaza City",
+        "country": "PS",
+        "type": "MILB",
+        "alt_names": [
+          "\u063a\u0632\u0629",
+          "Gaza Strip",
+          "\u0627\u0644\u0642\u0637\u0627\u0639"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.468,
+          31.507
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Rafah",
+        "country": "PS",
+        "type": "MILB",
+        "alt_names": [
+          "\u0631\u0641\u062d",
+          "Rafah Crossing"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.258,
+          31.296
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Southern Lebanon",
+        "country": "LB",
+        "type": "MILB",
+        "alt_names": [
+          "\u062c\u0646\u0648\u0628 \u0644\u0628\u0646\u0627\u0646",
+          "South Lebanon"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.5,
+          33.25
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bekaa Valley",
+        "country": "LB",
+        "type": "MILB",
+        "alt_names": [
+          "\u0648\u0627\u062f\u064a \u0627\u0644\u0628\u0642\u0627\u0639",
+          "Beqaa Valley"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.0,
+          33.85
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Strait of Hormuz",
+        "country": "IR",
+        "type": "MILB",
+        "alt_names": [
+          "\u0645\u0636\u064a\u0642 \u0647\u0631\u0645\u0632",
+          "Hormuz Strait"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          56.35,
+          26.6
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bab al-Mandab Strait",
+        "country": "YE",
+        "type": "MILB",
+        "alt_names": [
+          "\u0628\u0627\u0628 \u0627\u0644\u0645\u0646\u062f\u0628",
+          "Bab el-Mandeb"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.45,
+          12.6
+        ]
+      }
+    }
+  ]
+}

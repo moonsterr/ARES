@@ -70,9 +70,32 @@ class Settings(BaseSettings):
         description="Seconds between RSS poll cycles (default 5 minutes)"
     )
 
+    # ── GDELT ──────────────────────────────────────────────────────────
+    GDELT_BASE_URL: str = Field(
+        default="https://api.gdeltproject.org/api/v2/doc/doc",
+        description="GDELT v2 Doc API base URL"
+    )
+    GDELT_POLL_INTERVAL: int = Field(
+        default=900,
+        description="Seconds between GDELT poll cycles (default 15 minutes)"
+    )
+    GDELT_MODE: str = Field(
+        default="artlist",
+        description="GDELT mode: artlist (articles), timelineraw (timeline)"
+    )
+    GDELT_MAX_RECORDS: int = Field(
+        default=50,
+        description="Maximum GDELT articles to fetch per cycle"
+    )
+    GDELT_QUERY: str = Field(
+        default="(military OR strike OR attack OR conflict OR war OR bomb OR explosion OR Israel OR Gaza OR Lebanon OR Iran OR Syria OR Yemen OR Ukraine)",
+        description="GDELT search query for conflict-related articles"
+    )
+
     # ── Agent feature flags ───────────────────────────────────────────
     ENABLE_TELEGRAM: bool = Field(default=False)
     ENABLE_RSS: bool = Field(default=True)
+    ENABLE_GDELT: bool = Field(default=True)
     ENABLE_ADSB: bool = Field(default=True)
     ENABLE_FIRMS: bool = Field(default=True)
     ENABLE_SENTINEL: bool = Field(default=True)

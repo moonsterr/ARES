@@ -4,6 +4,31 @@ const MAX_EVENTS = 500   // cap in-memory event log to prevent memory growth
 
 export function useEventStore() {
   const [events, setEvents] = useState([])
+  const [layerVisibility, setLayerVisibility] = useState({})
+  const [infrastructure, setInfrastructure] = useState({
+    cables: null,
+    pipelines: null,
+    ports: null,
+    military_bases: null,
+  })
+
+  const toggleLayer = useCallback((layerId) => {
+    setLayerVisibility(prev => ({
+      ...prev,
+      [layerId]: !(prev[layerId] ?? true),
+    }))
+  }, [])
+
+  const setLayerVisible = useCallback((layerId, visible) => {
+    setLayerVisibility(prev => ({
+      ...prev,
+      [layerId]: visible,
+    }))
+  }, [])
+
+  const setInfrastructureData = useCallback((data) => {
+    setInfrastructure(data)
+  }, [])
 
   const addEvent = useCallback((incoming) => {
     // ── ADS-B sweep: unpack aircraft array into individual pseudo-events ──
@@ -79,6 +104,41 @@ export function useEventStore() {
       return
     }
 
+    // ── AIS vessel sweep: unpack vessels array into pseudo-events ──
+    if (incoming.type === 'ais_sweep') {
+      const vessels = incoming.vessels ?? []
+      setEvents(prev => {
+        let next = [...prev]
+        for (const v of vessels) {
+          const id = `vessel-${v.mmsi}`
+          const pseudoEvent = {
+            id,
+            category: 'vessel',
+            lat: v.lat,
+            lon: v.lon,
+            location_name: v.name || v.mmsi,
+            confidence: 1.0,
+            sources: ['ais'],
+            mmsi: v.mmsi,
+            name: v.name,
+            vessel_type: v.vessel_type,
+            flag: v.flag,
+            heading: v.heading,
+            speed_kts: v.speed_kts,
+            created_at: new Date().toISOString(),
+          }
+          const idx = next.findIndex(e => e.id === id)
+          if (idx !== -1) {
+            next[idx] = { ...next[idx], ...pseudoEvent }
+          } else {
+            next = [pseudoEvent, ...next]
+          }
+        }
+        return next.length > MAX_EVENTS ? next.slice(0, MAX_EVENTS) : next
+      })
+      return
+    }
+
     // ── Ping / unknown system messages: ignore ──
     if (!incoming.category) return
 
@@ -107,5 +167,15 @@ export function useEventStore() {
     setEvents([])
   }, [])
 
-  return { events, addEvent, addEvents, clearEvents }
+  return { 
+    events, 
+    addEvent, 
+    addEvents, 
+    clearEvents,
+    layerVisibility,
+    toggleLayer,
+    setLayerVisible,
+    infrastructure,
+    setInfrastructureData,
+  }
 }

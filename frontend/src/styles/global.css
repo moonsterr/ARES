@@ -149,6 +149,134 @@ body {
   50% { opacity: 0.5; }
 }
 
+/* ── Coordinate search overlay ───────────────────────────────────────── */
+.coord-search {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  pointer-events: none;   /* children opt-in */
+}
+
+.coord-search__btn {
+  pointer-events: all;
+  width: 36px;
+  height: 36px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.coord-search__btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.coord-search__panel {
+  pointer-events: all;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 290px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  animation: coord-panel-in 120ms ease;
+}
+
+@keyframes coord-panel-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.coord-search__label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.coord-search__row {
+  display: flex;
+  gap: 6px;
+}
+
+.coord-search__input {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 8px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.coord-search__input:focus {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.coord-search__input--error {
+  border-color: rgba(239, 68, 68, 0.7) !important;
+}
+
+.coord-search__input::placeholder {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.coord-search__go {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: var(--radius-sm);
+  color: #93c5fd;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+}
+
+.coord-search__go:hover {
+  background: rgba(59, 130, 246, 0.35);
+}
+
+.coord-search__error {
+  font-size: 10px;
+  color: #f87171;
+  letter-spacing: 0.04em;
+}
+
+.coord-search__hint {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.06em;
+}
+
 /* Utility classes */
 .sr-only {
   position: absolute;

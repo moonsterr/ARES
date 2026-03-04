@@ -363,3 +363,81 @@ async def process_rss_entry(raw_text: str, feed_url: str) -> ConflictIntel:
     intel.locations = unique_locs[:5]
 
     return intel
+
+
+async def process_gdelt_entry(raw_text: str, title: str) -> ConflictIntel:
+    """
+    NLP pipeline variant for GDELT news articles.
+    
+    Similar to process_rss_entry() but optimized for GDELT's specific format:
+      • Title is the primary text — often more informative than seentext
+      • GDELT articles are already English (global news)
+      • Focus on extracting location from title since GDELT doesn't always include full text
+      
+    Geocoding of extracted location names is handled by the caller (gdelt_fetcher.py).
+    """
+    intel = ConflictIntel(raw_text=raw_text)
+
+    # Step 1 — Language detection (GDELT is mostly English but may have other languages)
+    lang = detect_language(title)
+    intel.source_language = lang
+
+    # Step 2 — Translation if needed
+    if lang in TRANSLATE_LANGUAGES:
+        translation = await translate_to_english(title, lang)
+    else:
+        translation = title
+    intel.translation = translation
+
+    # Step 3 — Regex triage
+    category, regex_confidence = categorize_message(translation)
+    intel.category = category
+    intel.confidence = regex_confidence
+
+    # Step 4 — LLM classification (lower threshold for GDELT — quality prose)
+    if regex_confidence < 0.6 or category == EventCategory.unknown:
+        llm_category, llm_confidence = await classify_category_llm(translation)
+        if llm_confidence > regex_confidence:
+            intel.category = llm_category
+            intel.confidence = llm_confidence
+
+    # Step 5 — Fast regex entity extraction
+    intel.weapons_mentioned = extract_weapon_mentions(translation)
+    intel.unit_mentions = extract_unit_mentions(translation)
+    intel.casualty_count = extract_casualty_count(translation)
+
+    # Step 6 — LLM NER (always runs for GDELT — headlines are short, every extraction helps)
+    if intel.confidence >= 0.3:
+        try:
+            llm_entities = await extract_entities_llm(translation)
+            if llm_entities:
+                for loc_name in llm_entities.get("locations", []):
+                    if loc_name and isinstance(loc_name, str):
+                        intel.locations.append(LocationEntity(
+                            raw_text=loc_name,
+                            normalized=loc_name.strip(),
+                        ))
+                llm_weapons = llm_entities.get("weapons", [])
+                if llm_weapons:
+                    intel.weapons_mentioned = list(set(intel.weapons_mentioned + llm_weapons))
+                llm_units = llm_entities.get("units", [])
+                if llm_units:
+                    intel.unit_mentions = list(set(intel.unit_mentions + llm_units))
+                if intel.casualty_count is None and llm_entities.get("casualties"):
+                    intel.casualty_count = llm_entities["casualties"]
+                if llm_entities.get("is_confirmed"):
+                    intel.is_confirmed = True
+        except Exception as e:
+            logger.debug(f"[LLM] GDELT NER error: {e}")
+
+    # Step 7 — Deduplicate locations
+    seen_locs: set[str] = set()
+    unique_locs: list[LocationEntity] = []
+    for loc in intel.locations:
+        key = (loc.normalized or loc.raw_text).lower()
+        if key not in seen_locs:
+            seen_locs.add(key)
+            unique_locs.append(loc)
+    intel.locations = unique_locs[:5]
+
+    return intel
