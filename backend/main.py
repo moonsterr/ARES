@@ -18,7 +18,6 @@ from .agents.bravo_news import poll_rss
 from .agents.bravo_websdr import run_websdr_monitor
 from .agents.bravo_marine import poll_marine
 from .agents.bravo_sentinel import run_sentinel_worker
-from .agents.bravo_news import run_news_harvester
 from .config import settings
 
 logging.basicConfig(
@@ -57,9 +56,6 @@ async def lifespan(app: FastAPI):
 
     if settings.ENABLE_MARINE:
         tasks.append(asyncio.create_task(poll_marine(), name="bravo_marine"))
-
-    if settings.ENABLE_NEWS:
-        tasks.append(asyncio.create_task(run_news_harvester(), name="bravo_news"))
 
     logger.info(f"[ARES] {len(tasks)} agent tasks launched")
     yield
@@ -121,14 +117,13 @@ async def health():
         "status":  "operational",
         "version": "1.0.0",
         "agents": {
-            "alpha_telegram":  settings.ENABLE_TELEGRAM,
-            "bravo_news":      settings.ENABLE_RSS,
-            "bravo_adsb":      settings.ENABLE_ADSB,
-            "bravo_firms":     settings.ENABLE_FIRMS,
-            "bravo_sentinel":  settings.ENABLE_SENTINEL,
-            "bravo_websdr":    settings.ENABLE_WEBSDR,
-            "bravo_marine":    settings.ENABLE_MARINE,
-            "bravo_news":      settings.ENABLE_NEWS,
+            "alpha_telegram": settings.ENABLE_TELEGRAM,
+            "bravo_news":     settings.ENABLE_RSS,
+            "bravo_adsb":     settings.ENABLE_ADSB,
+            "bravo_firms":    settings.ENABLE_FIRMS,
+            "bravo_sentinel": settings.ENABLE_SENTINEL,
+            "bravo_websdr":   settings.ENABLE_WEBSDR,
+            "bravo_marine":   settings.ENABLE_MARINE,
         },
         "ws_clients": manager.connection_count,
     }
@@ -144,16 +139,15 @@ async def agent_status():
             "description": "Telegram channel monitor (15+ OSINT channels)",
         },
         "bravo_news": {
-            "enabled":     settings.ENABLE_RSS,
-            "configured":  bool(settings.RSS_FEEDS),
-            "feed_count":  len(settings.RSS_FEEDS),
-            "poll_interval_s": settings.RSS_POLL_INTERVAL,
-            "description": "RSS news harvester — Al Jazeera, JPost, MEE (Ollama NER)",
+            "enabled":          settings.ENABLE_RSS,
+            "configured":       bool(settings.RSS_FEEDS),
+            "feed_count":       len(settings.RSS_FEEDS),
+            "poll_interval_s":  settings.RSS_POLL_INTERVAL,
+            "description":      "RSS news harvester — Al Jazeera, JPost, MEE (Ollama NER)",
         },
         "bravo_adsb": {
             "enabled":     settings.ENABLE_ADSB,
-            # ADSB.lol v2 is keyless — always configured when enabled
-            "configured":  True,
+            "configured":  True,  # ADSB.lol v2 is keyless
             "description": "ADSB.lol v2 military aircraft tracker (no API key required)",
         },
         "bravo_firms": {
@@ -168,17 +162,12 @@ async def agent_status():
         },
         "bravo_websdr": {
             "enabled":     settings.ENABLE_WEBSDR,
-            "configured":  True,  # no key needed
+            "configured":  True,
             "description": "WebSDR HFGCS radio monitor (EAM detection)",
         },
         "bravo_marine": {
             "enabled":     settings.ENABLE_MARINE,
             "configured":  bool(settings.MARINETRAFFIC_API_KEY),
             "description": "MarineTraffic AIS naval vessel tracker",
-        },
-        "bravo_news": {
-            "enabled":     settings.ENABLE_NEWS,
-            "configured":  True,  # no API key required
-            "description": "RSS tactical news harvester (Al Jazeera, JPost, MEE)",
         },
     }

@@ -1,295 +1,368 @@
 """
-Agent BRAVO-F: RSS tactical news harvester.
-Replaces alpha_harvester (Telegram) as the open-source text intelligence feed.
+Agent BRAVO-N — RSS News Harvester
+====================================
+Polls a configurable list of tactical RSS feeds (Al Jazeera, Jerusalem Post,
+Middle East Eye, etc.) on a fixed interval, processes each entry through the
+full LLM pipeline, and broadcasts structured ConflictIntel events.
 
-On first startup it performs a 6-hour historical backfill — any entry whose
-published timestamp falls within the last 6 hours is eligible.  Subsequent
-cycles only process articles newer than the last poll timestamp, preventing
-re-ingestion.
-
-For each matched article the agent also extracts the full summary/description
-text and stores it in the `translation` column so the frontend can display a
-human-readable explanation of the event alongside the headline.
+Key features
+------------
+• SHA-256 content hash deduplication — same story polled twice never creates
+  a duplicate pin or DB row.
+• Geo-tag extraction — reads <geo:lat>/<geo:long> or <georss:point> if present;
+  falls back to Ollama-extracted location names → local military DB → Nominatim.
+• Per-feed source labelling: source field is "rss:<feed_hostname>".
+• High-confidence promotion: if an RSS event's confidence >= 0.75 AND the
+  geocoder returns a local-DB match (military base), set is_confirmed=True so
+  the frontend can apply the high-confidence pulse animation.
 """
+from __future__ import annotations
+
 import asyncio
+import hashlib
 import logging
-import re
-from datetime import datetime, timedelta, timezone
-from email.utils import parsedate_to_datetime
+import time
+import xml.etree.ElementTree as ET
+from typing import Optional
+from urllib.parse import urlparse
 
-import feedparser
+import httpx
 
-from ..database import get_pool
-from ..websocket_manager import manager
 from ..config import settings
+from ..database import insert_event
+from ..intelligence.geocoder import resolve_location, lookup_local
+from ..intelligence.llm_pipeline import process_rss_entry
+from ..intelligence.confidence import initial_bba
+from ..models.event import ConflictIntel, LocationEntity
+from ..websocket_manager import manager
 
 logger = logging.getLogger("bravo_news")
 
-# ── Feed sources ──────────────────────────────────────────────────────────────
-RSS_FEEDS: list[str] = [
-    "https://www.aljazeera.com/xml/rss/all.xml",
-    "https://www.jpost.com/rss/rssfeeds.aspx?catid=1",
-    "https://www.middleeasteye.net/rss",
-]
-
-# ── Tactical keyword filter (case-insensitive) ────────────────────────────────
-TACTICAL_KEYWORDS: set[str] = {
-    "strike", "explosion", "airstrike", "missile",
-    "drone", "intercept", "beirut", "tehran", "idf", "hezbollah",
+# ── XML namespaces used by geo-enabled RSS feeds ──────────────────────
+_NS = {
+    "geo":     "http://www.w3.org/2003/01/geo/wgs84_pos#",
+    "georss":  "http://www.georss.org/georss",
+    "media":   "http://search.yahoo.com/mrss/",
+    "content": "http://purl.org/rss/1.0/modules/content/",
+    "dc":      "http://purl.org/dc/elements/1.1/",
 }
 
-# ── City → (lon, lat) mapping  (PostGIS uses lon first in ST_Point) ───────────
-CITY_COORDS: dict[str, tuple[float, float]] = {
-    "beirut":    (35.5018, 33.8938),
-    "tehran":    (51.3890, 35.6892),
-    "tel aviv":  (34.7818, 32.0853),
-    "damascus":  (36.2913, 33.5138),
-}
-DEFAULT_COORDS: tuple[float, float] = (36.2765, 33.5102)   # Levant regional centre
-
-POLL_INTERVAL_S: int = 300        # 5 minutes between cycles
-BACKFILL_HOURS:  int = 6          # on startup, look back this many hours
-NEWS_CONFIDENCE: float = 0.7
-
-# In-process deduplication: stores article URLs already inserted this session.
-_seen_urls: set[str] = set()
-
-# Tracks the timestamp of the most-recently processed article so subsequent
-# cycles only look at genuinely new entries.
-_last_poll_time: datetime | None = None
+# ── In-process deduplication store ───────────────────────────────────
+# Maps SHA-256(url + title) → unix timestamp of first ingestion.
+# Cleared of entries older than 48 h on each poll cycle.
+_SEEN: dict[str, float] = {}
+_DEDUP_TTL_S: int = 172_800  # 48 hours
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
-def _is_tactical(text: str) -> bool:
-    """Return True if any tactical keyword appears in the lowercased text."""
-    lower = text.lower()
-    return any(kw in lower for kw in TACTICAL_KEYWORDS)
+def _entry_hash(url: str, title: str) -> str:
+    """Stable SHA-256 fingerprint for an RSS entry."""
+    raw = f"{url.strip()}|{title.strip().lower()}"
+    return hashlib.sha256(raw.encode()).hexdigest()
 
 
-def _resolve_location(text: str) -> tuple[str, float, float]:
+def _prune_seen():
+    """Remove stale entries from the in-process dedup store."""
+    cutoff = time.monotonic() - _DEDUP_TTL_S
+    stale = [k for k, v in _SEEN.items() if v < cutoff]
+    for k in stale:
+        del _SEEN[k]
+
+
+# ── RSS parsing ───────────────────────────────────────────────────────
+
+def _extract_geo(item: ET.Element) -> tuple[Optional[float], Optional[float]]:
     """
-    Scan text for a known city name and return (city_label, lon, lat).
-    Falls back to a Levant regional centre when nothing matches.
+    Try to extract explicit geo-coordinates from an RSS <item>.
+    Supports:
+      • <geo:lat> / <geo:long>
+      • <georss:point>  (space-separated "lat lon")
+    Returns (lat, lon) or (None, None).
     """
-    lower = text.lower()
-    for city, (lon, lat) in CITY_COORDS.items():
-        if city in lower:
-            return city.title(), lon, lat
-    return "Middle East (regional)", DEFAULT_COORDS[0], DEFAULT_COORDS[1]
-
-
-def _parse_entry_time(entry) -> datetime | None:
-    """
-    Try to extract a timezone-aware published datetime from a feedparser entry.
-    feedparser populates `published_parsed` (struct_time, UTC) when it can parse
-    the date; fall back to the raw `published` string via email.utils otherwise.
-    Returns None if no date is available.
-    """
-    if entry.get("published_parsed"):
+    lat_el = item.find("geo:lat", _NS)
+    lon_el = item.find("geo:long", _NS)
+    if lat_el is not None and lon_el is not None:
         try:
-            import calendar
-            ts = calendar.timegm(entry.published_parsed)
-            return datetime.fromtimestamp(ts, tz=timezone.utc)
-        except Exception:
+            return float(lat_el.text), float(lon_el.text)
+        except (TypeError, ValueError):
             pass
 
-    raw = entry.get("published", "") or entry.get("updated", "")
-    if raw:
-        try:
-            dt = parsedate_to_datetime(raw)
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
-            return dt
-        except Exception:
-            pass
+    point_el = item.find("georss:point", _NS)
+    if point_el is not None and point_el.text:
+        parts = point_el.text.strip().split()
+        if len(parts) == 2:
+            try:
+                return float(parts[0]), float(parts[1])
+            except ValueError:
+                pass
 
-    return None
-
-
-def _clean_html(raw: str) -> str:
-    """Strip HTML tags and collapse whitespace from a summary string."""
-    text = re.sub(r"<[^>]+>", " ", raw)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
+    return None, None
 
 
-def _extract_description(entry) -> str:
+def _parse_feed(xml_bytes: bytes, feed_url: str) -> list[dict]:
     """
-    Pull the best available description / body text from a feedparser entry.
-    Priority: content[0].value > summary > "" (empty string if nothing found).
-    HTML is stripped so only plain text reaches the database.
+    Parse an RSS 2.0 or Atom feed and return a list of normalised entry dicts:
+        {url, title, summary, geo_lat, geo_lon}
+    Silently skips malformed entries.
     """
-    # `content` is a list of content objects (Atom feeds)
-    content_list = entry.get("content", [])
-    if content_list:
-        raw = content_list[0].get("value", "")
-        if raw:
-            return _clean_html(raw)
-
-    summary = entry.get("summary", "") or entry.get("description", "")
-    if summary:
-        return _clean_html(summary)
-
-    return ""
-
-
-async def _insert_news_event(
-    pool,
-    title: str,
-    description: str,
-    url: str,
-    location_name: str,
-    lon: float,
-    lat: float,
-    published_at: datetime | None,
-) -> int | None:
-    """
-    Write a single news event into the PostGIS events table.
-    - raw_text    → article headline
-    - translation → article body/summary (the "explanation" of the event)
-    - created_at  → article's own published timestamp (or now() as fallback)
-    Returns the new row id, or None on failure.
-    """
-    sql = """
-        INSERT INTO events (
-            category,
-            location,
-            location_name,
-            confidence,
-            sources,
-            raw_text,
-            translation,
-            created_at
-        ) VALUES (
-            'kinetic',
-            ST_SetSRID(ST_Point($1, $2), 4326),
-            $3,
-            $4,
-            $5,
-            $6,
-            $7,
-            $8
-        )
-        RETURNING id
-    """
-    created = published_at or datetime.now(timezone.utc)
+    import re
+    entries: list[dict] = []
     try:
-        async with pool.acquire() as conn:
-            row = await conn.fetchrow(
-                sql,
-                lon,
-                lat,
-                location_name,
-                NEWS_CONFIDENCE,
-                [url],
-                title,
-                description or None,   # NULL if empty — cleaner than empty string
-                created,
-            )
-            return row["id"] if row else None
+        root = ET.fromstring(xml_bytes)
+    except ET.ParseError as exc:
+        logger.warning(f"[BRAVO-N] XML parse error for {feed_url}: {exc}")
+        return entries
+
+    # RSS 2.0
+    channel = root.find("channel")
+    items = channel.findall("item") if channel is not None else []
+
+    # Atom
+    atom_ns = "http://www.w3.org/2005/Atom"
+    if not items:
+        items = root.findall(f"{{{atom_ns}}}entry")
+
+    for item in items:
+        # Use explicit is-not-None checks — ET.Element has deprecated truth-value testing
+        title_el = item.find("title")
+        if title_el is None:
+            title_el = item.find(f"{{{atom_ns}}}title")
+        title = (title_el.text or "").strip() if title_el is not None else ""
+
+        link_el = item.find("link")
+        if link_el is None:
+            link_el = item.find(f"{{{atom_ns}}}link")
+        if link_el is not None:
+            url = link_el.text or link_el.get("href", "")
+        else:
+            guid_el = item.find("guid")
+            url = guid_el.text if guid_el is not None else ""
+        url = (url or "").strip()
+
+        desc_el = item.find("description")
+        if desc_el is None:
+            desc_el = item.find(f"{{{atom_ns}}}summary")
+        if desc_el is None:
+            desc_el = item.find(f"{{{atom_ns}}}content")
+        if desc_el is None:
+            desc_el = item.find("content:encoded", _NS)
+        summary = (desc_el.text or "").strip() if desc_el is not None else ""
+        if "<" in summary:
+            summary = re.sub(r"<[^>]+>", " ", summary).strip()
+            summary = re.sub(r"\s{2,}", " ", summary)
+
+        if not title and not summary:
+            continue
+
+        geo_lat, geo_lon = _extract_geo(item)
+
+        entries.append({
+            "url":     url,
+            "title":   title,
+            "summary": summary[:1000],
+            "geo_lat": geo_lat,
+            "geo_lon": geo_lon,
+        })
+
+    return entries
+
+
+# ── Feed fetch ────────────────────────────────────────────────────────
+
+async def _fetch_feed(client: httpx.AsyncClient, url: str) -> Optional[bytes]:
+    """Fetch a single RSS feed URL. Returns raw bytes or None on error."""
+    try:
+        resp = await client.get(url, follow_redirects=True, timeout=20.0)
+        resp.raise_for_status()
+        return resp.content
     except Exception as exc:
-        logger.error(f"[BRAVO-F] DB insert failed: {exc}")
+        logger.warning(f"[BRAVO-N] Failed to fetch {url}: {exc}")
         return None
 
 
-def _should_process(entry_time: datetime | None, cutoff: datetime) -> bool:
-    """
-    Return True if the entry is new enough to process.
-    Entries with no timestamp are always processed (we can't tell their age).
-    """
-    if entry_time is None:
-        return True
-    return entry_time >= cutoff
+# ── Source label helper ───────────────────────────────────────────────
+
+def _source_label(feed_url: str) -> str:
+    """Derive a short source label from the feed URL hostname."""
+    try:
+        host = urlparse(feed_url).hostname or feed_url
+        if host.startswith("www."):
+            host = host[4:]
+        return f"rss:{host}"
+    except Exception:
+        return "rss:unknown"
 
 
-# ── Main loop ─────────────────────────────────────────────────────────────────
+# ── Per-entry processing ──────────────────────────────────────────────
 
-async def run_news_harvester() -> None:
+async def _process_entry(entry: dict, feed_url: str) -> Optional[dict]:
     """
-    Infinite asyncio loop: poll RSS feeds every 5 minutes.
+    Full pipeline for a single RSS entry:
+      1. Dedup check (hash)
+      2. LLM pipeline (translation, NER, categorisation)
+      3. Geocoding (geo-tag → local DB → Nominatim)
+      4. DST confidence initialisation
+      5. DB insert + WebSocket broadcast
+    Returns the broadcast payload dict, or None if skipped.
+    """
+    title   = entry["title"]
+    summary = entry["summary"]
+    url     = entry["url"]
 
-    First cycle:  backfill the last 6 hours (cutoff = now − 6h).
-    Subsequent:   only process entries newer than the previous cycle start.
+    # 1. Deduplication
+    h = _entry_hash(url, title)
+    if h in _SEEN:
+        logger.debug(f"[BRAVO-N] Duplicate skipped: {title[:60]}")
+        return None
+    _SEEN[h] = time.monotonic()
+
+    # 2. LLM pipeline
+    raw_text = f"{title}. {summary}" if summary else title
+    intel: ConflictIntel = await process_rss_entry(raw_text, feed_url)
+
+    if intel.category.value == "unknown" and intel.confidence < 0.3:
+        logger.debug(f"[BRAVO-N] Low-confidence unknown dropped: {title[:60]}")
+        _SEEN.pop(h, None)
+        return None
+
+    # 3. Geocoding
+    geo_lat: Optional[float] = entry.get("geo_lat")
+    geo_lon: Optional[float] = entry.get("geo_lon")
+    used_local_db = False
+
+    if geo_lat is not None and geo_lon is not None:
+        if not intel.locations:
+            intel.locations.append(LocationEntity(
+                raw_text=title[:80],
+                lat=geo_lat,
+                lon=geo_lon,
+                confidence=0.9,
+            ))
+        else:
+            intel.locations[0].lat = geo_lat
+            intel.locations[0].lon = geo_lon
+            intel.locations[0].confidence = 0.9
+    else:
+        for loc in intel.locations:
+            if loc.lat is not None:
+                continue
+            coords = await resolve_location(loc.raw_text, loc.normalized)
+            if coords:
+                loc.lat, loc.lon = coords
+                local_hit = lookup_local(loc.normalized or loc.raw_text)
+                if local_hit:
+                    loc.confidence = local_hit[3]
+                    used_local_db = True
+
+    # 4. High-confidence promotion
+    if used_local_db and intel.confidence >= 0.75:
+        intel.is_confirmed = True
+
+    # 5. DST initialisation
+    source_label = _source_label(feed_url)
+    alpha_weights = {
+        "rss:aljazeera.com":     0.72,
+        "rss:jpost.com":         0.70,
+        "rss:middleeasteye.net": 0.65,
+    }
+    alpha = alpha_weights.get(source_label, 0.65)
+    bba_result = initial_bba(intel, alpha)
+    intel.bel          = bba_result["belief"]
+    intel.pl           = bba_result["plausibility"]
+    intel.conflict_k   = bba_result["conflict_k"]
+    intel.source_alpha = alpha
+
+    # 6. DB insert
+    try:
+        event_id = await insert_event(intel, source=source_label)
+    except Exception as exc:
+        logger.error(f"[BRAVO-N] DB insert failed for '{title[:60]}': {exc}")
+        return None
+
+    # 7. Broadcast
+    payload = intel.model_dump()
+    payload.update({
+        "id":              event_id,
+        "source":          source_label,
+        "rss_url":         url,
+        "lat":             intel.lat,
+        "lon":             intel.lon,
+        "location_name":   intel.location_name,
+        "category":        intel.category.value,
+        "fusion_status":   intel.fusion_status,
+        "high_confidence": intel.is_confirmed and intel.confidence >= 0.75,
+    })
+
+    await manager.broadcast_json(payload)
+    logger.info(
+        f"[BRAVO-N] [{source_label}] {intel.category.value.upper()} "
+        f"conf={intel.confidence:.2f} loc={intel.location_name!r} — {title[:70]}"
+    )
+    return payload
+
+
+# ── Main poll loop ────────────────────────────────────────────────────
+
+async def poll_rss():
     """
-    global _last_poll_time
-    logger.info("[BRAVO-F] RSS news harvester starting up — backfilling last 6 hours")
+    Main coroutine for Agent BRAVO-N.
+    Runs forever, polling all configured RSS feeds every RSS_POLL_INTERVAL seconds.
+    """
+    feeds    = settings.RSS_FEEDS
+    interval = settings.RSS_POLL_INTERVAL
+
+    if not feeds:
+        logger.warning("[BRAVO-N] No RSS feeds configured — agent idle")
+        while True:
+            await asyncio.sleep(3600)
+
+    logger.info(
+        f"[BRAVO-N] RSS harvester starting — {len(feeds)} feed(s), "
+        f"poll interval {interval}s"
+    )
+
+    headers = {
+        "User-Agent": "ARES-OSINT-Dashboard/1.0 RSS-Harvester",
+        "Accept":     "application/rss+xml, application/xml, text/xml, */*",
+    }
 
     while True:
-        now     = datetime.now(timezone.utc)
-        # On first run use the 6-hour backfill window; after that use the
-        # timestamp of the previous cycle so nothing is missed or double-counted.
-        cutoff  = _last_poll_time if _last_poll_time else (now - timedelta(hours=BACKFILL_HOURS))
-        pool    = await get_pool()
-        inserted_count = 0
+        cycle_start = time.monotonic()
+        _prune_seen()
 
-        for feed_url in RSS_FEEDS:
-            try:
-                loop = asyncio.get_event_loop()
-                feed = await loop.run_in_executor(None, feedparser.parse, feed_url)
+        async with httpx.AsyncClient(headers=headers) as client:
+            raw_feeds = await asyncio.gather(
+                *[_fetch_feed(client, url) for url in feeds],
+                return_exceptions=False,
+            )
 
-                if feed.bozo and not feed.entries:
-                    logger.warning(
-                        f"[BRAVO-F] Feed parse error for {feed_url}: {feed.bozo_exception}"
-                    )
-                    continue
+        total_entries  = 0
+        total_ingested = 0
 
-                for entry in feed.entries:
-                    title: str = entry.get("title", "").strip()
-                    url: str   = entry.get("link", "").strip()
+        for feed_url, xml_bytes in zip(feeds, raw_feeds):
+            if xml_bytes is None:
+                continue
 
-                    if not title or not url:
-                        continue
+            entries = _parse_feed(xml_bytes, feed_url)
+            total_entries += len(entries)
 
-                    # ── Time filter ───────────────────────────────────────────
-                    entry_time = _parse_entry_time(entry)
-                    if not _should_process(entry_time, cutoff):
-                        continue
-
-                    # ── Deduplication ─────────────────────────────────────────
-                    if url in _seen_urls:
-                        continue
-
-                    # ── Keyword filter (title + description) ──────────────────
-                    description = _extract_description(entry)
-                    combined    = f"{title} {description}"
-                    if not _is_tactical(combined):
-                        continue
-
-                    _seen_urls.add(url)
-
-                    location_name, lon, lat = _resolve_location(combined)
-                    event_id = await _insert_news_event(
-                        pool, title, description, url,
-                        location_name, lon, lat, entry_time
+            for entry in entries:
+                try:
+                    result = await _process_entry(entry, feed_url)
+                    if result:
+                        total_ingested += 1
+                except Exception as exc:
+                    logger.error(
+                        f"[BRAVO-N] Unhandled error processing entry "
+                        f"from {feed_url}: {exc}",
+                        exc_info=True,
                     )
 
-                    if event_id is not None:
-                        inserted_count += 1
-                        logger.info(
-                            f"[BRAVO-F] Inserted event {event_id}: "
-                            f'"{title[:80]}" → {location_name}'
-                        )
-                        await manager.broadcast_json({
-                            "type":          "news_event",
-                            "event_id":      event_id,
-                            "category":      "kinetic",
-                            "raw_text":      title,
-                            "description":   description,
-                            "location_name": location_name,
-                            "lat":           lat,
-                            "lon":           lon,
-                            "confidence":    NEWS_CONFIDENCE,
-                            "sources":       [url],
-                            "published_at":  entry_time.isoformat() if entry_time else None,
-                        })
-
-            except Exception as exc:
-                logger.error(f"[BRAVO-F] Error processing feed {feed_url}: {exc}")
-
-        _last_poll_time = now
+        elapsed = time.monotonic() - cycle_start
         logger.info(
-            f"[BRAVO-F] Cycle complete — {inserted_count} new tactical events inserted "
-            f"(cutoff: {cutoff.strftime('%H:%M UTC')})"
+            f"[BRAVO-N] Cycle complete — {total_entries} entries fetched, "
+            f"{total_ingested} new events ingested in {elapsed:.1f}s. "
+            f"Next poll in {max(0, interval - elapsed):.0f}s"
         )
-        await asyncio.sleep(POLL_INTERVAL_S)
+
+        sleep_for = max(0.0, interval - elapsed)
+        await asyncio.sleep(sleep_for)

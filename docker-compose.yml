@@ -30,6 +30,9 @@ services:
     env_file: .env
     environment:
       - DATABASE_URL=postgresql://ares:ares_secret@postgres:5432/ares_db
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8000:8000"
     volumes:

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Viewer, Ion, Terrain, Cartesian3, Cartesian2,
   Color, HeightReference, VerticalOrigin, LabelStyle,
   DistanceDisplayCondition, ConstantPositionProperty,
   ConstantProperty, Entity, NearFarScalar,
-  ScreenSpaceEventType, CallbackProperty, JulianDate
+  ScreenSpaceEventType, CallbackProperty
 } from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 import '../styles/globe.css'
