@@ -1,0 +1,186 @@
+{
+  "type": "FeatureCollection",
+  "description": "Verified nuclear facilities in the Middle East / wider theatre. Coordinates from open-source IAEA, NTI, and academic sources.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Natanz Fuel Enrichment Plant",
+        "country": "Iran",
+        "type": "enrichment",
+        "status": "active",
+        "operator": "AEOI",
+        "notes": "Primary uranium enrichment site; underground centrifuge halls"
+      },
+      "geometry": { "type": "Point", "coordinates": [51.7272, 33.7230] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fordow Fuel Enrichment Plant",
+        "country": "Iran",
+        "type": "enrichment",
+        "status": "active",
+        "operator": "AEOI",
+        "notes": "Deeply buried underground enrichment facility near Qom"
+      },
+      "geometry": { "type": "Point", "coordinates": [50.9786, 34.8855] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bushehr Nuclear Power Plant",
+        "country": "Iran",
+        "type": "power_plant",
+        "status": "active",
+        "operator": "AEOI / Rosatom",
+        "notes": "Iran's first and only operational nuclear power reactor; Russian-built"
+      },
+      "geometry": { "type": "Point", "coordinates": [50.8831, 28.8310] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Isfahan Nuclear Technology Center",
+        "country": "Iran",
+        "type": "research_fuel",
+        "status": "active",
+        "operator": "AEOI",
+        "notes": "UF6 conversion plant; fuel fabrication; research reactors"
+      },
+      "geometry": { "type": "Point", "coordinates": [51.6939, 32.6373] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Arak IR-40 Heavy Water Reactor",
+        "country": "Iran",
+        "type": "reactor_research",
+        "status": "modified",
+        "operator": "AEOI",
+        "notes": "Redesigned under JCPOA; heavy water production facility co-located"
+      },
+      "geometry": { "type": "Point", "coordinates": [49.2356, 34.1009] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Parchin Military Complex",
+        "country": "Iran",
+        "type": "military_suspected",
+        "status": "active",
+        "operator": "IRGC / Ministry of Defense",
+        "notes": "Suspected high-explosive testing for nuclear weapon initiation"
+      },
+      "geometry": { "type": "Point", "coordinates": [51.7681, 35.5231] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Dimona Negev Nuclear Research Center",
+        "country": "Israel",
+        "type": "plutonium_production",
+        "status": "active",
+        "operator": "Israeli Atomic Energy Commission",
+        "notes": "Israel's primary nuclear weapons facility; officially undeclared"
+      },
+      "geometry": { "type": "Point", "coordinates": [35.1418, 31.0033] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Soreq Nuclear Research Center",
+        "country": "Israel",
+        "type": "research",
+        "status": "active",
+        "operator": "Israeli Atomic Energy Commission",
+        "notes": "Research reactor; isotope production; civilian nuclear R&D"
+      },
+      "geometry": { "type": "Point", "coordinates": [34.7733, 31.8159] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Deir ez-Zor Reactor Site (Al-Kibar)",
+        "country": "Syria",
+        "type": "reactor_destroyed",
+        "status": "destroyed",
+        "operator": "Syrian government (former)",
+        "notes": "Suspected gas-cooled reactor; destroyed by Israeli airstrike Sep 2007"
+      },
+      "geometry": { "type": "Point", "coordinates": [39.8298, 35.7078] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Miniature Neutron Source Reactor (MNSR)",
+        "country": "Syria",
+        "type": "research",
+        "status": "inactive",
+        "operator": "Syrian Atomic Energy Commission",
+        "notes": "Chinese-supplied research reactor at Damascus; status uncertain post-civil war"
+      },
+      "geometry": { "type": "Point", "coordinates": [36.2848, 33.5138] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Barakah Nuclear Power Plant",
+        "country": "UAE",
+        "type": "power_plant",
+        "status": "active",
+        "operator": "ENEC / Korean KEPCO",
+        "notes": "Arab world's first operational nuclear power plant; 4 APR-1400 reactors"
+      },
+      "geometry": { "type": "Point", "coordinates": [52.2304, 23.9726] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "King Abdulaziz City for Science and Technology (KACARE) Research Reactor",
+        "country": "Saudi Arabia",
+        "type": "research",
+        "status": "planned",
+        "operator": "KACARE / KACST",
+        "notes": "Saudi Arabia pursuing civilian nuclear program; site under development"
+      },
+      "geometry": { "type": "Point", "coordinates": [46.6247, 24.6877] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Incirlik Air Base (NATO nuclear sharing)",
+        "country": "Turkey",
+        "type": "nuclear_storage",
+        "status": "active",
+        "operator": "USAF / NATO",
+        "notes": "Estimated 50 B61 tactical nuclear gravity bombs under NATO sharing agreement"
+      },
+      "geometry": { "type": "Point", "coordinates": [35.4258, 37.0021] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zaporizhzhia Nuclear Power Plant",
+        "country": "Ukraine",
+        "type": "power_plant",
+        "status": "occupied",
+        "operator": "Energoatom (occupied by Russia)",
+        "notes": "Europe's largest NPP; under Russian military occupation since Mar 2022; IAEA monitoring"
+      },
+      "geometry": { "type": "Point", "coordinates": [34.5861, 47.5081] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Chernobyl Exclusion Zone",
+        "country": "Ukraine",
+        "type": "disaster_site",
+        "status": "monitored",
+        "operator": "State Agency of Ukraine (IAEA monitoring)",
+        "notes": "1986 reactor disaster site; temporarily occupied by Russia Feb–Mar 2022"
+      },
+      "geometry": { "type": "Point", "coordinates": [30.0933, 51.3890] }
+    }
+  ]
+}

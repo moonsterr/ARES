@@ -19,6 +19,10 @@ from .agents.bravo_websdr import run_websdr_monitor
 from .agents.bravo_marine import poll_marine
 from .agents.bravo_sentinel import run_sentinel_worker
 from .agents.gdelt_fetcher import poll_gdelt
+from .agents.acled_fetcher import poll_acled
+from .agents.ucdp_fetcher import poll_ucdp
+from .agents.nga_warnings import poll_nga
+from .services.conflict_service import get_conflict_events, get_conflict_summary
 from .config import settings
 
 import json
@@ -63,6 +67,15 @@ async def lifespan(app: FastAPI):
 
     if settings.ENABLE_MARINE:
         tasks.append(asyncio.create_task(poll_marine(), name="bravo_marine"))
+
+    if settings.ENABLE_ACLED:
+        tasks.append(asyncio.create_task(poll_acled(), name="charlie_acled"))
+
+    if settings.ENABLE_UCDP:
+        tasks.append(asyncio.create_task(poll_ucdp(), name="charlie_ucdp"))
+
+    if settings.ENABLE_NGA:
+        tasks.append(asyncio.create_task(poll_nga(), name="charlie_nga"))
 
     logger.info(f"[ARES] {len(tasks)} agent tasks launched")
     yield
@@ -124,13 +137,17 @@ async def health():
         "status":  "operational",
         "version": "1.0.0",
         "agents": {
-            "alpha_telegram": settings.ENABLE_TELEGRAM,
-            "bravo_news":     settings.ENABLE_RSS,
-            "bravo_adsb":     settings.ENABLE_ADSB,
-            "bravo_firms":    settings.ENABLE_FIRMS,
-            "bravo_sentinel": settings.ENABLE_SENTINEL,
-            "bravo_websdr":   settings.ENABLE_WEBSDR,
-            "bravo_marine":   settings.ENABLE_MARINE,
+            "alpha_telegram":  settings.ENABLE_TELEGRAM,
+            "bravo_news":      settings.ENABLE_RSS,
+            "bravo_adsb":      settings.ENABLE_ADSB,
+            "bravo_firms":     settings.ENABLE_FIRMS,
+            "bravo_sentinel":  settings.ENABLE_SENTINEL,
+            "bravo_websdr":    settings.ENABLE_WEBSDR,
+            "bravo_marine":    settings.ENABLE_MARINE,
+            "bravo_gdelt":     settings.ENABLE_GDELT,
+            "charlie_acled":   settings.ENABLE_ACLED,
+            "charlie_ucdp":    settings.ENABLE_UCDP,
+            "charlie_nga":     settings.ENABLE_NGA,
         },
         "ws_clients": manager.connection_count,
     }
@@ -178,10 +195,29 @@ async def agent_status():
             "description": "MarineTraffic AIS naval vessel tracker",
         },
         "bravo_gdelt": {
-            "enabled":     settings.ENABLE_GDELT,
-            "configured":  True,
+            "enabled":         settings.ENABLE_GDELT,
+            "configured":      True,
             "poll_interval_s": settings.GDELT_POLL_INTERVAL,
-            "description": "GDELT v2 news geo-event extractor",
+            "description":     "GDELT v2 news geo-event extractor",
+        },
+        "charlie_acled": {
+            "enabled":         settings.ENABLE_ACLED,
+            "configured":      bool(settings.ACLED_API_KEY and settings.ACLED_EMAIL),
+            "poll_interval_s": settings.ACLED_POLL_INTERVAL,
+            "description":     "ACLED armed conflict events — 170+ countries (requires free API key)",
+        },
+        "charlie_ucdp": {
+            "enabled":         settings.ENABLE_UCDP,
+            "configured":      True,  # UCDP is keyless
+            "poll_interval_s": settings.UCDP_POLL_INTERVAL,
+            "lookback_days":   settings.UCDP_LOOKBACK_DAYS,
+            "description":     "UCDP GED conflict events — academic precision baseline",
+        },
+        "charlie_nga": {
+            "enabled":         settings.ENABLE_NGA,
+            "configured":      True,  # NGA MSI is keyless
+            "poll_interval_s": settings.NGA_POLL_INTERVAL,
+            "description":     "NGA NAVAREA maritime broadcast warnings (Persian Gulf, Red Sea, etc.)",
         },
     }
 
@@ -204,14 +240,16 @@ def _load_infrastructure_file(filename: str):
 @app.get("/api/infrastructure")
 async def get_infrastructure():
     """
-    Returns all infrastructure overlay data (cables, pipelines, ports, military bases).
+    Returns all infrastructure overlay data:
+    cables, pipelines, ports, military bases, nuclear sites.
     GeoJSON format for use with Deck.gl PathLayer and IconLayer.
     """
     return {
-        "cables": _load_infrastructure_file("cables.geojson"),
-        "pipelines": _load_infrastructure_file("pipelines.geojson"),
-        "ports": _load_infrastructure_file("ports.geojson"),
+        "cables":         _load_infrastructure_file("cables.geojson"),
+        "pipelines":      _load_infrastructure_file("pipelines.geojson"),
+        "ports":          _load_infrastructure_file("ports.geojson"),
         "military_bases": _load_infrastructure_file("military_bases.geojson"),
+        "nuclear_sites":  _load_infrastructure_file("nuclear_sites.geojson"),
     }
 
 
@@ -219,14 +257,49 @@ async def get_infrastructure():
 async def get_infrastructure_layer(layer: str):
     """
     Returns a specific infrastructure layer.
-    Valid layers: cables, pipelines, ports, military_bases
+    Valid layers: cables, pipelines, ports, military_bases, nuclear_sites
     """
-    valid_layers = ["cables", "pipelines", "ports", "military_bases"]
+    valid_layers = ["cables", "pipelines", "ports", "military_bases", "nuclear_sites"]
     if layer not in valid_layers:
         return {"error": f"Invalid layer. Valid: {valid_layers}"}, 404
-    
+
     filename = f"{layer}.geojson"
     data = _load_infrastructure_file(filename)
     if data is None:
         return {"error": f"Layer {layer} not found"}, 404
     return data
+
+
+# ── Conflict data endpoints ─────────────────────────────────────────────
+
+@app.get("/api/acled-events")
+async def get_acled_events(
+    limit: int = Query(default=100, ge=1, le=500),
+    category: str | None = Query(default=None),
+):
+    """Returns recent ACLED-sourced conflict events."""
+    return await get_conflict_events(limit=limit, source="acled", category=category)
+
+
+@app.get("/api/ucdp-events")
+async def get_ucdp_events(
+    limit: int = Query(default=100, ge=1, le=500),
+    category: str | None = Query(default=None),
+):
+    """Returns recent UCDP-sourced conflict events."""
+    return await get_conflict_events(limit=limit, source="ucdp", category=category)
+
+
+@app.get("/api/nga-warnings")
+async def get_nga_warnings(limit: int = Query(default=50, ge=1, le=200)):
+    """Returns recent NGA NAVAREA maritime warnings."""
+    return await get_conflict_events(limit=limit, source="nga")
+
+
+@app.get("/api/conflict/summary")
+async def conflict_summary():
+    """
+    Aggregated summary of all conflict events across sources.
+    Returns counts by source and category for dashboard widgets.
+    """
+    return await get_conflict_summary()

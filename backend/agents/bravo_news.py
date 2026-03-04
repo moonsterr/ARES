@@ -20,9 +20,11 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import json
 import logging
 import time
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -37,6 +39,42 @@ from ..models.event import ConflictIntel, LocationEntity
 from ..websocket_manager import manager
 
 logger = logging.getLogger("bravo_news")
+
+# ── Feed list loader ──────────────────────────────────────────────────
+
+_RSS_FEEDS_JSON = Path(__file__).parent.parent / "data" / "rss_feeds.json"
+
+
+def _load_feeds() -> tuple[list[str], dict[str, float]]:
+    """
+    Load feed URLs and per-source reliability weights from rss_feeds.json.
+    Falls back to settings.RSS_FEEDS (3 hardcoded URLs) if the file is missing.
+    Returns (feed_url_list, {source_label: reliability_alpha}).
+    """
+    if _RSS_FEEDS_JSON.exists():
+        try:
+            data = json.loads(_RSS_FEEDS_JSON.read_text())
+            feeds_data = data.get("feeds", [])
+            urls   = [f["url"] for f in feeds_data if f.get("url")]
+            alphas = {}
+            for f in feeds_data:
+                url = f.get("url", "")
+                rel = float(f.get("reliability", 0.65))
+                try:
+                    host = urlparse(url).hostname or url
+                    if host.startswith("www."):
+                        host = host[4:]
+                    alphas[f"rss:{host}"] = rel
+                except Exception:
+                    pass
+            logger.info(f"[BRAVO-N] Loaded {len(urls)} feeds from rss_feeds.json")
+            return urls, alphas
+        except Exception as exc:
+            logger.warning(f"[BRAVO-N] Failed to load rss_feeds.json: {exc} — using config fallback")
+
+    # Fallback to settings.RSS_FEEDS
+    logger.info(f"[BRAVO-N] Using {len(settings.RSS_FEEDS)} feeds from config")
+    return settings.RSS_FEEDS, {}
 
 # ── XML namespaces used by geo-enabled RSS feeds ──────────────────────
 _NS = {
@@ -194,7 +232,7 @@ def _source_label(feed_url: str) -> str:
 
 # ── Per-entry processing ──────────────────────────────────────────────
 
-async def _process_entry(entry: dict, feed_url: str) -> Optional[dict]:
+async def _process_entry(entry: dict, feed_url: str, alpha_weights: dict[str, float] | None = None) -> Optional[dict]:
     """
     Full pipeline for a single RSS entry:
       1. Dedup check (hash)
@@ -257,14 +295,15 @@ async def _process_entry(entry: dict, feed_url: str) -> Optional[dict]:
     if used_local_db and intel.confidence >= 0.75:
         intel.is_confirmed = True
 
-    # 5. DST initialisation
-    source_label = _source_label(feed_url)
-    alpha_weights = {
+    # 5. DST initialisation — use per-feed reliability from JSON, fallback 0.65
+    source_label  = _source_label(feed_url)
+    _fallback_alphas = {
         "rss:aljazeera.com":     0.72,
         "rss:jpost.com":         0.70,
         "rss:middleeasteye.net": 0.65,
     }
-    alpha = alpha_weights.get(source_label, 0.65)
+    _weights = alpha_weights or _fallback_alphas
+    alpha = _weights.get(source_label, _fallback_alphas.get(source_label, 0.65))
     bba_result = initial_bba(intel, alpha)
     intel.bel          = bba_result["belief"]
     intel.pl           = bba_result["plausibility"]
@@ -306,8 +345,11 @@ async def poll_rss():
     """
     Main coroutine for Agent BRAVO-N.
     Runs forever, polling all configured RSS feeds every RSS_POLL_INTERVAL seconds.
+    Feed list and per-source reliability weights are loaded from
+    backend/data/rss_feeds.json (170+ sources) with a fallback to settings.RSS_FEEDS.
     """
-    feeds    = settings.RSS_FEEDS
+    # Load feeds from rss_feeds.json (or config fallback)
+    feeds, alpha_weights = _load_feeds()
     interval = settings.RSS_POLL_INTERVAL
 
     if not feeds:
@@ -347,7 +389,7 @@ async def poll_rss():
 
             for entry in entries:
                 try:
-                    result = await _process_entry(entry, feed_url)
+                    result = await _process_entry(entry, feed_url, alpha_weights=alpha_weights)
                     if result:
                         total_ingested += 1
                 except Exception as exc:
