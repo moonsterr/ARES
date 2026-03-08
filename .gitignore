@@ -1,8 +1,11 @@
 __pycache__/
 *.pyc
 .env
+*.session
+*.session-journal
+auth_telegram.py
+backend/data/models/
 my_env/
 .vscode/
 node_modules/
 dist/
-.env

@@ -6,6 +6,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -15,8 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source as a proper package at /app/backend/
 COPY . ./backend/
 
-# Create data directories
-RUN mkdir -p backend/data/models
+# Create data directories and download fasttext language detection model
+RUN mkdir -p backend/data/models && \
+    wget -q -O backend/data/models/lid.176.bin \
+    https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin
 
 EXPOSE 8000
 

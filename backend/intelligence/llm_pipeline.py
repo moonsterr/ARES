@@ -230,8 +230,10 @@ async def process_message(raw_text: str, channel_name: str) -> ConflictIntel:
     intel.category = category
     intel.confidence = regex_confidence
 
-    # Step 4 — LLM refinement for low-confidence or unknown categories
-    if regex_confidence < 0.6 or category == EventCategory.unknown:
+    # Step 4 — LLM refinement for low-confidence or unknown categories.
+    # Skip if regex_confidence == 0.0: the pre-filter found no conflict keywords,
+    # so the text is clearly irrelevant and the LLM call would waste resources.
+    if regex_confidence > 0.0 and (regex_confidence < 0.6 or category == EventCategory.unknown):
         llm_category, llm_confidence = await classify_category_llm(translation)
         # Only override if LLM is more confident
         if llm_confidence > regex_confidence:
@@ -316,8 +318,12 @@ async def process_rss_entry(raw_text: str, feed_url: str) -> ConflictIntel:
     intel.category    = category
     intel.confidence  = regex_confidence
 
-    # Step 4 — LLM classification (lower threshold for RSS — prose is richer)
-    if regex_confidence < 0.6 or category == EventCategory.unknown:
+    # Step 4 — LLM classification
+    # Only call LLM if regex found *some* conflict signal (confidence > 0) but
+    # was not certain enough. If regex_confidence == 0.0, the pre-filter found
+    # zero conflict keywords — no point asking the LLM; it will say "unknown"
+    # with high confidence and we'd store irrelevant junk.
+    if regex_confidence > 0.0 and (regex_confidence < 0.6 or category == EventCategory.unknown):
         llm_category, llm_confidence = await classify_category_llm(translation)
         if llm_confidence > regex_confidence:
             intel.category   = llm_category
@@ -394,8 +400,9 @@ async def process_gdelt_entry(raw_text: str, title: str) -> ConflictIntel:
     intel.category = category
     intel.confidence = regex_confidence
 
-    # Step 4 — LLM classification (lower threshold for GDELT — quality prose)
-    if regex_confidence < 0.6 or category == EventCategory.unknown:
+    # Step 4 — LLM classification (lower threshold for GDELT — quality prose).
+    # Skip entirely if regex found zero conflict signal — article is irrelevant.
+    if regex_confidence > 0.0 and (regex_confidence < 0.6 or category == EventCategory.unknown):
         llm_category, llm_confidence = await classify_category_llm(translation)
         if llm_confidence > regex_confidence:
             intel.category = llm_category

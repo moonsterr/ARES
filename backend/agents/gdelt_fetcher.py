@@ -35,6 +35,15 @@ logger = logging.getLogger("bravo_gdelt")
 _SEEN: dict[str, float] = {}
 _DEDUP_TTL_S: int = 86_400  # 24 hours
 
+# Domains known to produce non-conflict noise despite matching the GDELT query.
+# Entries are matched against the article's domain field (lower-cased).
+_NOISE_DOMAIN_FRAGMENTS = frozenset([
+    "sport", "football", "soccer", "cricket", "tennis", "basketball",
+    "entertainment", "celebrity", "gossip", "lifestyle", "fashion",
+    "recipe", "cooking", "travel", "tourism", "horoscope",
+    "netflix", "amazon", "disney", "streaming",
+])
+
 
 def _entry_hash(url: str) -> str:
     """Stable SHA-256 fingerprint for a GDELT entry."""
@@ -91,9 +100,14 @@ async def _process_article(article: dict) -> Optional[dict]:
     """
     url = article.get("url", "")
     title = article.get("title", "")
-    seendate = article.get("seendate", "")
-    
+    domain = (article.get("domain") or "").lower()
+
     if not url or not title:
+        return None
+
+    # Pre-filter: skip domains known to produce non-conflict noise
+    if any(frag in domain for frag in _NOISE_DOMAIN_FRAGMENTS):
+        logger.debug(f"[BRAVO-G] Noise domain skipped ({domain}): {title[:60]}")
         return None
 
     # 1. Deduplication
@@ -107,8 +121,10 @@ async def _process_article(article: dict) -> Optional[dict]:
     raw_text = f"{title}. {article.get('seentext', '')}"
     intel: ConflictIntel = await process_gdelt_entry(raw_text, title)
 
-    if intel.category.value == "unknown" and intel.confidence < 0.3:
-        logger.debug(f"[BRAVO-G] Low-confidence unknown dropped: {title[:60]}")
+    # Drop non-conflict content: confidence == 0 means the regex pre-filter
+    # found zero conflict keywords.
+    if intel.confidence == 0.0 or (intel.category.value == "unknown" and intel.confidence < 0.35):
+        logger.debug(f"[BRAVO-G] Non-conflict dropped (conf={intel.confidence:.2f}): {title[:60]}")
         _SEEN.pop(h, None)
         return None
 

@@ -177,6 +177,19 @@ async def poll_ucdp():
         while True:
             await asyncio.sleep(3600)
 
+    # UCDP requires an access token since February 2026.
+    # Request one by emailing: mert.yilmaz@pcr.uu.se  (describe your project)
+    # Then set UCDP_ACCESS_TOKEN in .env
+    if not settings.UCDP_ACCESS_TOKEN:
+        logger.warning(
+            "[CHARLIE-B] UCDP_ACCESS_TOKEN is not set. "
+            "UCDP now requires a token (since Feb 2026). "
+            "Request one from mert.yilmaz@pcr.uu.se and set UCDP_ACCESS_TOKEN in .env. "
+            "Agent will sleep until token is available."
+        )
+        while not settings.UCDP_ACCESS_TOKEN:
+            await asyncio.sleep(3600)
+
     interval = settings.UCDP_POLL_INTERVAL
     logger.info(f"[CHARLIE-B] UCDP fetcher starting — poll interval {interval}s, lookback {settings.UCDP_LOOKBACK_DAYS}d")
 

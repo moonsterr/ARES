@@ -83,6 +83,7 @@ async def lookup_nominatim(location_text: str) -> Optional[tuple[float, float, s
     """
     Async Nominatim geocoding for location names not in the local database.
     Rate-limited to 1 request per second per Nominatim ToS.
+    Searches globally — no bounding box restriction.
     Returns (lat, lon, display_name) or None.
     """
     global _LAST_NOMINATIM_CALL
@@ -95,13 +96,11 @@ async def lookup_nominatim(location_text: str) -> Optional[tuple[float, float, s
     if elapsed < 1.0:
         await asyncio.sleep(1.0 - elapsed)
 
-    # Restrict geocoding to Middle East region
+    # Global search — no viewbox/bounded so "Sri Lanka", "Russia", etc. all resolve
     params = {
-        "q":              location_text,
-        "format":         "json",
-        "limit":          1,
-        "viewbox":        "25,42,65,14",  # lon_min,lat_max,lon_max,lat_min
-        "bounded":        1,
+        "q":               location_text,
+        "format":          "json",
+        "limit":           1,
         "accept-language": "en",
     }
     headers = {
@@ -170,7 +169,7 @@ async def resolve_location_from_ollama_name(
          (default 70 vs normal 78) because Ollama may not return the exact
          canonical spelling (e.g. "T4 Airbase" vs "Tiyas Air Base / T-4").
       2. If local match found → return immediately with high confidence.
-      3. If no local match → fall back to Nominatim bounded to Middle East.
+      3. If no local match → fall back to Nominatim (global search).
 
     Returns (lat, lon, canonical_name, confidence) or None.
     """

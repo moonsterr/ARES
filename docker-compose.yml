@@ -38,7 +38,14 @@ services:
     volumes:
       - ./backend:/app/backend  # hot reload in dev — mount as package subdir
       - ./backend/data:/app/backend/data
-    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+      - ./ares_session.session:/app/ares_session.session  # Telethon auth session — persisted on host
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
     restart: unless-stopped
 
   frontend:

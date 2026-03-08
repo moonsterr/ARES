@@ -88,8 +88,8 @@ class Settings(BaseSettings):
         description="Maximum GDELT articles to fetch per cycle"
     )
     GDELT_QUERY: str = Field(
-        default="(military OR strike OR attack OR conflict OR war OR bomb OR explosion OR Israel OR Gaza OR Lebanon OR Iran OR Syria OR Yemen OR Ukraine)",
-        description="GDELT search query for conflict-related articles"
+        default='(airstrike OR "air strike" OR "missile strike" OR "drone strike" OR explosion OR shelling OR "ground offensive" OR ceasefire OR "war crime" OR casualties OR "killed" OR "wounded" OR hostage OR "military operation") AND (Israel OR Gaza OR Palestine OR Lebanon OR Iran OR Syria OR Yemen OR Ukraine OR Russia OR Iraq OR Sudan OR Somalia)',
+        description="GDELT search query for conflict-related articles — tightly scoped to reduce noise"
     )
 
     # ── ACLED ─────────────────────────────────────────────────────────

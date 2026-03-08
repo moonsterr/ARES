@@ -248,8 +248,11 @@ async def _process_entry(entry: dict, feed_url: str, alpha_weights: dict[str, fl
     raw_text = f"{title}. {summary}" if summary else title
     intel: ConflictIntel = await process_rss_entry(raw_text, feed_url)
 
-    if intel.category.value == "unknown" and intel.confidence < 0.3:
-        logger.debug(f"[BRAVO-N] Low-confidence unknown dropped: {title[:60]}")
+    # Drop non-conflict content: confidence == 0 means the regex pre-filter
+    # found zero conflict keywords. Drop regardless of category to avoid
+    # storing irrelevant articles (sports, entertainment, etc.).
+    if intel.confidence == 0.0 or (intel.category.value == "unknown" and intel.confidence < 0.35):
+        logger.debug(f"[BRAVO-N] Non-conflict dropped (conf={intel.confidence:.2f}): {title[:60]}")
         _SEEN.pop(h, None)
         return None
 
